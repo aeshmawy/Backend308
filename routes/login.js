@@ -5,6 +5,31 @@ var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
 
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *    description: Give a json file containing a username and password. 
+ *    parameters:
+ *       - name: username
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       - name: password
+ *         in: formData
+ *         required: true
+ *         type: string
+ *       
+ *    responses:
+ *      '200':
+ *        description: A successful Login
+ *      '404': 
+ *        description: Username does not exist in database
+ *      '400':
+ *        description: Username exists but the password is wrong
+ *      '500':
+ *        description: Something has gone terribly wrong.
+ */
 router.post('/', async (req,res) => {
     var username = req.body.username;
     var password = req.body.password;
@@ -15,7 +40,7 @@ router.post('/', async (req,res) => {
       if(err)
       {
         console.log(err);
-        return res.status(500).send("wrong information")
+        return res.status(500).send("Wrong information")
       }
       if(!founduser)
       {

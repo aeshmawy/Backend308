@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var swaggerJsDoc = require('swagger-jsdoc');
+var swaggerUi = require('swagger-ui-express');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -11,6 +13,29 @@ var registerRouter = require('./routes/register');
 
 
 var app = express();
+
+//SWAGGER 
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      version: "0.1.2",
+      title: "CS308 E-commerce website",
+      description: "Only has an elementary log in and registration page. (password encryption has been implemented.)",
+      contact: {
+        name: "Tarik Bulut and Ahmed Eshmawy"
+      },
+      servers: ["http://localhost:5000"]
+    }
+  },
+  apis: ['./routes/*.js']
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+
+//^^^^SWAGGER ENDS HERE ^^^^^^^^^^
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
