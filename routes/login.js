@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+
 const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
@@ -16,7 +17,7 @@ var User =  require("../Schema/User");
  *         schema: 
  *          type: object
  *          properties:
- *            username:
+ *            email:
  *              type: string
  *            password:
  *              type: string
@@ -32,32 +33,32 @@ var User =  require("../Schema/User");
  *        description: Something has gone terribly wrong.
  */
  router.post('/', async (req,res) => {
-  var username = req.body.username;
+  var email = req.body.email;
   var password = req.body.password;
-  if(username && password)
+  if(email && password)
   {
-  var founduser = await User.findOne({username: username}, (err,founduser) =>
+  var userInfo = await User.findOne({email: email}, (err,userInfo) =>
   {
     if(err)
     {
       console.log(err);
       return res.status(500).send("Wrong information")
     }
-    if(!founduser)
+    if(!userInfo)
     {
       return res.status(404).send("User does not exist.");
     }
-    else if(founduser)
+    else if(userInfo)
     {
-      return founduser;
+      return userInfo;
     }
     
   });
   
-  if(await bcrypt.compare(password,founduser.password))
+  if(await bcrypt.compare(password,userInfo.password))
   {
     //return a jwt token here
-    jwt.sign({founduser} , "tempprivatekey" , { expiresIn: "1h" },
+    jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
     (err, token) => {
       if(err)
       {
@@ -65,7 +66,7 @@ var User =  require("../Schema/User");
       }
       else
       {
-        return res.status(200).json({ msg: "Log in is successful", status:200, token: token,founduser })
+        return res.status(200).json({ msg: "Log in is successful", status:200, token: token,userInfo , loggedIn : true})
       }
     });
     

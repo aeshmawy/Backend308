@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+var validator = require('validator');
 const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
@@ -12,14 +13,14 @@ var User =  require("../Schema/User");
  *    description: username and password are required. usertype is not. (default for isSM and isPM is false)
  *    parameters:
  *     - in: body
- *       name: user
+ *       name: email
  *       schema:
  *         type: object
  *         required:
- *          - username
+ *          - email
  *          - password
  *         properties:
- *           username: 
+ *           email: 
  *             type: string
  *           password:
  *             type: string
@@ -42,14 +43,20 @@ router.post('/' , async (req,res) =>
   
   
   var newuser = new User();
-  if(req.body.username)
+  if(req.body.email)
   {
-    
-    if(await User.exists({ username: req.body.username}) )
-    {return res.status(400).send("Username must be unique.")}
-    newuser.username = req.body.username;
+    if(validator.isEmail(req.body.email))
+    {
+      if(await User.exists({ email: req.body.email}) )
+      {return res.status(401).send("Email must be unique.")}
+      newuser.email = req.body.email;
+    }
+    else
+    {
+      return res.status(401).send("Invalid email.")
+    }
   }
-  else {return res.status(400).send("Please insert a username");}
+  else {return res.status(400).send("Please insert a Email");}
   
   
   
@@ -72,8 +79,9 @@ router.post('/' , async (req,res) =>
     }
     else
     {
+      var userinfo = newuser;
       var token = jwt.sign({newuser} , "tempprivatekey" , { expiresIn: "1h" });
-      res.status(200).json({msg :  "User has been successfully added" , token , newuser})
+      res.status(200).json({msg :  "User has been successfully added" , token,userinfo  })
   
     }
     }); 
