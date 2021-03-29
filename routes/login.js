@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
-
 
 /**
  * @swagger
@@ -11,14 +11,15 @@ var User =  require("../Schema/User");
  *   post:
  *    description: Give a json file containing a username and password. 
  *    parameters:
- *       - name: username
- *         in: formData
- *         required: true
- *         type: string
- *       - name: password
- *         in: formData
- *         required: true
- *         type: string
+ *       - in : body
+ *         name : SomeUser
+ *         schema: 
+ *          type: object
+ *          properties:
+ *            username:
+ *              type: string
+ *            password:
+ *              type: string
  *       
  *    responses:
  *      '200':
@@ -30,39 +31,52 @@ var User =  require("../Schema/User");
  *      '500':
  *        description: Something has gone terribly wrong.
  */
-router.post('/', async (req,res) => {
-    var username = req.body.username;
-    var password = req.body.password;
-    if(username && password)
+ router.post('/', async (req,res) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  if(username && password)
+  {
+  var founduser = await User.findOne({username: username}, (err,founduser) =>
+  {
+    if(err)
     {
-    var founduser = await User.findOne({username: username}, (err,founduser) =>
+      console.log(err);
+      return res.status(500).send("Wrong information")
+    }
+    if(!founduser)
     {
+      return res.status(404).send("User does not exist.");
+    }
+    else if(founduser)
+    {
+      return founduser;
+    }
+    
+  });
+  
+  if(await bcrypt.compare(password,founduser.password))
+  {
+    //return a jwt token here
+    jwt.sign({founduser} , "tempprivatekey" , { expiresIn: "1h" },
+    (err, token) => {
       if(err)
       {
-        console.log(err);
-        return res.status(500).send("Wrong information")
+        return res.status(403).send("Something went wrong")
       }
-      if(!founduser)
+      else
       {
-        return res.status(404).send("User does not exist.");
+        return res.status(200).json({ msg: "Log in is successful", status:200, token: token,founduser })
       }
-      else if(founduser)
-      {
-        return founduser;
-      }
-      
     });
     
-    if(await bcrypt.compare(password,founduser.password))
-    {
-      return res.status(200).send("Successful Log in");
-    }
-    else
-    {
-      return res.status(400).send("Wrong Password");
-    }
   }
-    
+  else
+  {
+    return res.status(400).send("Wrong Password");
+  }
+}
+  
 });
+
 
 module.exports = router;

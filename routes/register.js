@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
 
@@ -23,14 +24,8 @@ var User =  require("../Schema/User");
  *           password:
  *             type: string
  *           userType:
- *             type: object
- *             properties:
- *                isSM: 
- *                  type: boolean
- *                  default: "false"
- *                isPM:
- *                  type: boolean
- *                  default: false
+ *             type: number
+ *             default: 1
  *              
  *    responses:
  *      '200':
@@ -45,41 +40,43 @@ var User =  require("../Schema/User");
 router.post('/' , async (req,res) =>
 {
   
-  console.log("123");
-  var newuser = new User();
-  newuser.username = req.body.username;
   
-  console.log(req.body.userType);
+  var newuser = new User();
+  if(req.body.username)
+  {
+    
+    if(await User.exists({ username: req.body.username}) )
+    {return res.status(400).send("Username must be unique.")}
+    newuser.username = req.body.username;
+  }
+  else {return res.status(400).send("Please insert a username");}
+  
+  
   
   if(req.body.userType)
-  newuser.userType = req.body.userType;
+  {newuser.userType = req.body.userType;}
 
   if(req.body.password)
   {
     newuser.password = await bcrypt.hash(req.body.password, 10); 
   }
+  else {return res.status(400).send("Please insert a password.");}
   
-  if(req.body.username && req.body.password)
-  {
-  newuser.save((err, Saveduser) => {
+  
+   newuser.save((err, Saveduser) => {
 
     if(err)
     { 
       //console.log(err);
-      res.status(500).send("Wrong information")
+      res.status(500).send("Something went wrong")
     }
     else
     {
-      res.status(200).send("User has been successfully added")
+      var token = jwt.sign({newuser} , "tempprivatekey" , { expiresIn: "1h" });
+      res.status(200).json({msg :  "User has been successfully added" , token , newuser})
   
     }
-    });
-  }
-  else
-  {
-    res.status("400").send("Username or Password missing.");
-  }
-  
+    }); 
 })
 
 
