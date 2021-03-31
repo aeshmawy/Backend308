@@ -35,6 +35,7 @@ var User =  require("../Schema/User");
  router.post('/', async (req,res) => {
   var email = req.body.email;
   var password = req.body.password;
+  var inDatabase;
   if(email && password)
   {
   var userInfo = await User.findOne({email: email}, (err,userInfo) =>
@@ -42,38 +43,44 @@ var User =  require("../Schema/User");
     if(err)
     {
       console.log(err);
+      inDatabase = false;
       return res.status(500).send("Wrong information")
     }
     if(!userInfo)
     {
-      return res.status(404).send("User does not exist.");
+      inDatabase = false;
+      return res.status(400).send("User does not exist.");
     }
     else if(userInfo)
     {
+      inDatabase = true;
       return userInfo;
     }
     
   });
-  
-  if(await bcrypt.compare(password,userInfo.password))
+
+  if(inDatabase)
   {
-    //return a jwt token here
-    jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
-    (err, token) => {
-      if(err)
-      {
-        return res.status(403).send("Something went wrong")
-      }
-      else
-      {
-        return res.status(200).json({ msg: "Log in is successful", status:200, token: token,userInfo , loggedIn : true})
-      }
-    });
-    
-  }
-  else
-  {
-    return res.status(400).send("Wrong Password");
+    if(await bcrypt.compare(password,userInfo.password) )
+    {
+      //return a jwt token here
+      jwt.sign({userinfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
+      (err, token) => {
+        if(err)
+        {
+          return res.status(403).send("Something went wrong")
+        }
+        else
+        {
+          return res.status(200).json({ msg: "Log in is successful", status:200, token: token,userInfo , loggedIn : true})
+        }
+      });
+      
+    }
+    else
+    {
+      return res.status(400).send("Wrong Password");
+    }
   }
 }
   
