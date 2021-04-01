@@ -64,7 +64,7 @@ var User =  require("../Schema/User");
     if(await bcrypt.compare(password,userInfo.password) )
     {
       //return a jwt token here
-      jwt.sign({userinfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
+      jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
       (err, token) => {
         if(err)
         {
