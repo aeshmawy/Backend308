@@ -17,6 +17,7 @@ var productSchema = new mongoose.Schema({
     productNumofRatings: {type: Number, min: 0 , default: 0},
     //productWarranty: {type:Number}
     productDistributor: {type: String , default: "Some Art Company"},
+    productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint"]},
     productImage:{type: Buffer}
 
 

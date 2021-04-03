@@ -52,6 +52,9 @@ const upload = multer(
  *             productDescription:
  *               type: string
  *               default: "This is a product!"
+ *             productCategory:
+ *               type: string
+ *               default: "Brush"
  *             productPrice: 
  *               type: number
  *             productDiscount:
@@ -78,9 +81,11 @@ const upload = multer(
      newProduct.productImage = fs.readFileSync(noImgPath);
 
      if(req.body.productName)
-     {   
-         newProduct.productName = req.body.productName;}
+     {newProduct.productName = req.body.productName;}
  
+     if(req.body.productCategory)
+     {newProduct.productCategory = req.body.productCategory;}
+
      if(req.body.productSize)
      {newProduct.productSize = req.body.productSize;}
  
