@@ -58,6 +58,13 @@ const upload = multer(
  *               type: number
  *             productStock: 
  *               type: number
+ *             productBestseller: 
+ *               type: boolean
+ *               default: false
+ *             productRating: 
+ *               type: number
+ *             productNumofRatings: 
+ *               type: number
  *       responses:
  *          200:
  *            description: A successful Login
@@ -94,7 +101,15 @@ const upload = multer(
  
      if(req.body.productDescription)
      {newProduct.productDescription = req.body.productDescription;}
+
+     if(req.body.productBestseller)
+     {newProduct.productBestseller = req.body.productBestseller;}
      
+     if(req.body.productRating)
+     {newProduct.productRating = req.body.productRating;}
+
+     if(req.body.productNumofRatings)
+     {newProduct.productNumofRatings = req.body.productNumofRatings;}
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
@@ -158,6 +173,7 @@ async (req, res) =>
 )
 
 
+
 /**
  * @swagger
  * /product/{id}/allinfo:
@@ -175,21 +191,21 @@ async (req, res) =>
  *           description: A successful product get
  */
 
-router.get('/:id/allinfo',
-async (req, res) => 
-{
-    var wantedProduct = await Product.findById(req.params.id, {productImage: 0}).exec();
-
-    if(!wantedProduct)
-    {
-        return res.status(400).send("Product with id: " + req.params.id + " does not exist");
-    }
-    else{
-        console.log("I am here")
-        return res.status(200).json(wantedProduct);
-    }
-}
-)
+ router.get('/:id/allinfo',
+ async (req, res) => 
+ {
+     var wantedProduct = await Product.findById(req.params.id, {productImage: 0}).exec();
+ 
+     if(!wantedProduct)
+     {
+         return res.status(400).send("Product with id: " + req.params.id + " does not exist");
+     }
+     else{
+         console.log("I am here")
+         return res.status(200).json(wantedProduct);
+     }
+ }
+ )
 
 /**
  * @swagger

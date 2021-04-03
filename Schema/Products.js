@@ -12,6 +12,9 @@ var productSchema = new mongoose.Schema({
     productStock: {type:Number , default : 10 , min: 0},
     productPrice: {type:Number, default: 15 ,min:0},
     productDiscount: {type: Number , default: 5 ,min:0, max:100},
+    productBestseller: {type: Boolean, default: false},
+    productRating: {type:Number, min:0 , max: 5},
+    productNumofRatings: {type: Number, min: 0 , default: 0},
     //productWarranty: {type:Number}
     productDistributor: {type: String , default: "Some Art Company"},
     productImage:{type: Buffer}
