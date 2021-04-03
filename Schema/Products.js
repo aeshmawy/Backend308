@@ -1,0 +1,23 @@
+var mongoose = require("mongoose");
+
+//ID, name, model, number,
+//description, quantity in stocks, price, warranty status, and distributor information.
+
+var productSchema = new mongoose.Schema({
+    
+    //productID: {type:Number, required: true}, Mongodb intializes an ID automatically
+    productSize: {type:String , required: true, default: "Standard"},
+    productName: {type:String , required: true},
+    productDescription: {type:String , default: "Some description."},
+    productStock: {type:Number , default : 10 , min: 0},
+    productPrice: {type:Number, default: 15 ,min:0},
+    productDiscount: {type: Number , default: 5 ,min:0, max:100},
+    //productWarranty: {type:Number}
+    productDistributor: {type: String , default: "Some Art Company"},
+    productImage:{type: Buffer}
+
+
+});
+
+var Product = mongoose.model('Products', productSchema);
+module.exports = Product;

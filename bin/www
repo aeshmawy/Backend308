@@ -15,7 +15,8 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '5000');
 console.log("Listening on port " + port)
 app.set('port', port);
-
+console.log("Connected to port number " + port + ". Access it through http://localhost:"+ port+"/");
+console.log("To access the api through swagger use : http://localhost:" + port +"/api-docs")
 /**
  * Create HTTP server.
  */

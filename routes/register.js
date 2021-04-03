@@ -49,6 +49,7 @@ router.post('/' , async (req,res) =>
     {
       if(await User.exists({ email: req.body.email}) )
       {return res.status(401).send("Email must be unique.")}
+      console.log("I am here")
       newuser.email = req.body.email;
     }
     else
