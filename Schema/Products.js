@@ -22,6 +22,6 @@ var productSchema = new mongoose.Schema({
 
 
 });
-
+productSchema.index({'$**' : 'text'});
 var Product = mongoose.model('Products', productSchema);
 module.exports = Product;

@@ -335,4 +335,31 @@ async (req,res) =>
      return res.status(400).send("Please give a correct input")
      return res.status(200).send(ProductsSearched);
  })
+
+ /**
+ * @swagger
+ * /product/search/{searchString}:
+ *   get:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *    - product
+ *    parameters:
+ *       - in : path
+ *         name : searchString
+ *         type: string
+ *         default: ""
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+
+router.get('/search/:searchString', async (req,res) => {
+    console.log("here" + req.params.searchString);
+    if(req.params.searchString === " ")
+    {var SearchedProducts = await Product.find( {} , {productImage: 0})}
+    else{var SearchedProducts = await Product.find({$text: {$search: req.params.searchString}} , {productImage: 0})}
+    res.status(200).send(SearchedProducts);
+
+})
 module.exports = router;
