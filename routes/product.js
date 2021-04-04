@@ -76,7 +76,7 @@ const upload = multer(
  async (req, res) => 
  {
      var newProduct = new Product(); 
-     console.log(req.body);
+     //console.log(req.body);
      
      newProduct.productImage = fs.readFileSync(noImgPath);
 
@@ -206,7 +206,7 @@ async (req, res) =>
          return res.status(400).send("Product with id: " + req.params.id + " does not exist");
      }
      else{
-         console.log("I am here")
+         //console.log("I am here")
          return res.status(200).json(wantedProduct);
      }
  }
@@ -233,7 +233,7 @@ async (req, res) =>
  *           schema:
  *           type: file
  */
-router.get('/:id/image', upload.single('upload'), 
+router.get('/:id/image',
 async (req, res) => 
 {
     var wantedProduct = await Product.findById(req.params.id)
@@ -248,4 +248,91 @@ async (req, res) =>
 }
 )
 
+/**
+ * @swagger
+ * /product/{category}:
+ *    get:
+ *       description: get all products of a certain category
+ *       tags:
+ *       - product
+ *       parameters:
+ *       - in : path
+ *         name: category
+ *         required: true
+ *         type: string
+ *       responses:
+ *         200:
+ *           description: A successful get
+ */
+
+router.get('/:category',
+async (req,res) =>
+{
+    var ProductsSearched = await Product.find({productCategory: req.params.category},{productImage: 0})
+    res.status(200).send(ProductsSearched);
+})
+
+
+/**
+ * @swagger
+ * /product/price/{order}:
+ *    get:
+ *       description: sort products accoring to price
+ *       tags:
+ *       - product
+ *       parameters:
+ *       - in : path
+ *         name: order
+ *         required: true
+ *         type: string
+ *         description: takes ascending and descending as input
+ *       responses:
+ *         200:
+ *           description: A successful get
+ */
+
+
+router.get('/price/:order', //order can be ascending , order can be descending
+async (req,res) =>
+{
+    if(req.params.order === "ascending")
+    var ProductsSearched = await Product.find({},{productImage: 0}).sort({productPrice: 1})
+    else if(req.params.order === "descending")
+    var ProductsSearched = await Product.find({},{productImage: 0}).sort({productPrice: -1}) 
+    else
+    return res.status(400).send("Please give a correct input")
+    return res.status(200).send(ProductsSearched);
+})
+
+
+/**
+ * @swagger
+ * /product/popular/{order}:
+ *    get:
+ *       description: sort products accoring to price
+ *       tags:
+ *       - product
+ *       parameters:
+ *       - in : path
+ *         name: order
+ *         required: true
+ *         type: string
+ *         description: takes rating and numrating as input
+ *       responses:
+ *         200:
+ *           description: A successful get
+ */
+
+
+ router.get('/popular/:order', //order can be rating , order can be numrating
+ async (req,res) =>
+ {
+     if(req.params.order === "rating")
+     var ProductsSearched = await Product.find({},{productImage: 0}).sort({productRating: -1 , productNumofRatings: -1})
+     else if(req.params.order === "numrating")
+     var ProductsSearched = await Product.find({},{productImage: 0}).sort({productNumofRatings: -1 , productRating: -1}) 
+     else
+     return res.status(400).send("Please give a correct input")
+     return res.status(200).send(ProductsSearched);
+ })
 module.exports = router;
