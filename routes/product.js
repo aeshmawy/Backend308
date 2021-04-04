@@ -178,6 +178,27 @@ async (req, res) =>
 )
 
 
+/**
+ * @swagger
+ * /product/all:
+ *   get:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *      - product
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+
+ router.get('/all', async (req,res) => {
+    
+    var SearchedProducts = await Product.find( {} , {productImage: 0})
+    
+    res.status(200).send(SearchedProducts);
+
+})
+
 
 /**
  * @swagger
@@ -362,4 +383,5 @@ router.get('/search/:searchString', async (req,res) => {
     res.status(200).send(SearchedProducts);
 
 })
+
 module.exports = router;
