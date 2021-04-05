@@ -55,6 +55,9 @@ const upload = multer(
  *             productCategory:
  *               type: string
  *               default: "Brush"
+ *             productBGcolor:
+ *               type: string
+ *               default : "Peach"
  *             productPrice: 
  *               type: number
  *             productDiscount:
@@ -82,7 +85,10 @@ const upload = multer(
 
      if(req.body.productName)
      {newProduct.productName = req.body.productName;}
- 
+     
+     if(req.body.productBGcolor)
+     {newProduct.productBGcolor = req.body.productBGcolor;}
+
      if(req.body.productCategory)
      {newProduct.productCategory = req.body.productCategory;}
 
@@ -202,7 +208,7 @@ async (req, res) =>
 
 /**
  * @swagger
- * /product/{id}/allinfo:
+ * /product/allinfo/{id}:
  *    get:
  *       description: get image of a product
  *       tags:
@@ -217,10 +223,20 @@ async (req, res) =>
  *           description: A successful product get
  */
 
- router.get('/:id/allinfo',
+ router.get('/allinfo/:id',
  async (req, res) => 
- {
-     var wantedProduct = await Product.findById(req.params.id, {productImage: 0}).exec();
+ {  
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+       var  wantedProduct = 
+       await Product.findById(req.params.id, {productImage: 0}
+       ,(err, wantedProduct) => 
+       {
+            if(err){return null}
+            else{return wantedProduct}
+       });
+    }
+    else{wantedProduct = null;}
  
      if(!wantedProduct)
      {
@@ -235,7 +251,7 @@ async (req, res) =>
 
 /**
  * @swagger
- * /product/{id}/image:
+ * /product/image/{id}:
  *    get:
  *       description: get image of a product
  *       tags:
@@ -254,10 +270,20 @@ async (req, res) =>
  *           schema:
  *           type: file
  */
-router.get('/:id/image',
+router.get('/image/:id',
 async (req, res) => 
 {
-    var wantedProduct = await Product.findById(req.params.id)
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+       var  wantedProduct = 
+       await Product.findById(req.params.id
+       ,(err, wantedProduct) => 
+       {
+            if(err){return null}
+            else{return wantedProduct}
+       });
+    }
+    else{wantedProduct = null;}
 
     if(!wantedProduct)
     {return res.status(400).send("Product with id: " + req.params.id + " does not exist");}
@@ -271,7 +297,7 @@ async (req, res) =>
 
 /**
  * @swagger
- * /product/{category}:
+ * /product/category/{category}:
  *    get:
  *       description: get all products of a certain category
  *       tags:
@@ -286,7 +312,7 @@ async (req, res) =>
  *           description: A successful get
  */
 
-router.get('/:category',
+router.get('/category/:category',
 async (req,res) =>
 {
     var ProductsSearched = await Product.find({productCategory: req.params.category},{productImage: 0})
@@ -383,5 +409,169 @@ router.get('/search/:searchString', async (req,res) => {
     res.status(200).send(SearchedProducts);
 
 })
+
+/**
+ * @swagger
+ * /product/filter:
+ *   get:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *    - productFilter
+ *    parameters:
+ *       - in : query
+ *         name : categories
+ *         type: array
+ *         items:
+ *           type: string
+ *       - in : query
+ *         name : order
+ *         type: string
+ *       - in : query
+ *         name: brands
+ *         type: array
+ *         items:
+ *           type: string
+ *       - in : query
+ *         name : searchString
+ *         type: string
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+
+router.get('/filter' , async (req,res) =>{
+    if(req.query.categories)
+    {var categories = req.query.categories.split(",");}
+    else
+    {var categories = ["Brush" , "Canvas" , "Paint", "Painting"]}
+
+    if(req.query.brands)
+    {var brands = req.query.brands.split(",")}
+    else
+    {
+    var brands = await Product.find({} , {productImage : 0})
+    .distinct('productDistributor', 
+    (error, brand) => 
+    {
+       // brand is an array of all unique department names
+       
+       return brand;
+    })
+    }
+    
+    
+    
+    try{
+    if(req.query.order === "ratings")
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    .sort({productRating: -1 , productNumofRatings: -1})}
+    else if(req.query.order === "popular")
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    .sort({productNumofRatings: -1 , productRating: -1}) }
+    else if (req.query.order === "ascending")
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories} , productDistributor : {$in: brands}} ,{productImage: 0})
+    .sort({productPrice: 1})}
+    else if (req.query.order === "descending")
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    .sort({productPrice: -1})}
+    else
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})}
+    }
+    catch{}
+    return res.status(200).send(ProductsSearched)
+})
+
+/**
+ * @swagger
+ * /product/bgcolor/{id}:
+ *   get:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *    - productBG
+ *    parameters:
+ *       - in : path
+ *         name : id
+ *         type: string
+ *         required : true
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+router.get('/bgcolor/:id' , async (req,res) =>{
+
+    if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+       var  wantedProduct = 
+       await Product.findById(req.params.id, {productImage: 0}
+       ,(err, wantedProduct) => 
+       {
+            if(err){return null}
+            else{return wantedProduct}
+       });
+    }
+    else{wantedProduct = null;}
+ 
+     if(!wantedProduct)
+     {
+         return res.status(400).send("Product with id: " + req.params.id + " does not exist");
+     }
+     else{
+         //console.log("I am here")
+         return res.status(200).json(wantedProduct.productBGcolor);
+     }
+}
+)
+
+/**
+ * @swagger
+ * /product/bgcolor/{id}:
+ *   put:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *    - productBG
+ *    parameters:
+ *       - in : path
+ *         name : id
+ *         type: string
+ *         required : true
+ *       - in : body
+ *         name : productBGcolor
+ *         schema: 
+ *          type: object
+ *          properties:
+ *            productBGcolor:
+ *              type: string
+ *              default : "Red"
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+ router.put('/bgcolor/:id' , async (req,res) =>{
+
+    if(req.params.id)
+    {
+        if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
+        {
+            await Product.findByIdAndUpdate(req.params.id, {productBGcolor: req.body.productBGcolor}
+            ,(err, wantedProduct) => 
+            {
+                if(err){return null}
+                else{return wantedProduct}
+            });
+            res.status(200).send("Color has been successfuly update")
+        }
+        else
+        {res.status(400).send("Please insert a correct id.")}
+        
+    }
+    else
+    {
+        res.status(400).send("Please insert an id.")
+    }
+}
+)
 
 module.exports = router;
