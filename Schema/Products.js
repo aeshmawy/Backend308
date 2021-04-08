@@ -23,6 +23,7 @@ var productSchema = new mongoose.Schema({
 
 
 });
+//asdf
 productSchema.index({'$**' : 'text'});
 var Product = mongoose.model('Products', productSchema);
 module.exports = Product;
