@@ -580,32 +580,38 @@ router.get('/bgcolor/:id' , async (req,res) =>{
 
 /**
  * @swagger
- * /product/imageLink/{id}:
+ * /product/imageLink:
  *   put:
  *    description: Returns a query according to the search term. (searchs all strings of the schema) 
  *    tags: 
  *    - product
- *    parameters:
- *       - in : path
- *         name : id
- *         type: string
- *         required : true
  *    responses:
  *      200:
  *        description: A successful search
  */
 
- router.put('/imageLink/:id' , async (req,res) =>{
+ router.put('/imageLink' , async (req,res) =>{
 
     if(req.params.id)
     {
         if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
         {
             await Product.findByIdAndUpdate(req.params.id, {productImageLink: `http://localhost:5000/product/image/${req.params.id}`}
+            
             ,(err, wantedProduct) => 
             {
                 if(err){return null}
                 else{return wantedProduct}
+            });
+            
+            await Product.find({}, async function (err, products) {    
+                for (var i=0; i<products.length; i++) {       
+                    Product.findOne({ _id: products[i]._id }, function (err, doc){
+                        doc.productFlutterLink = `http://10.0.2.2:5000/product/image/${doc._id}`;
+                        doc.save();
+                    });    
+                    
+                 }  
             });
             res.status(200).send("ImageLink has been updated")
         }

@@ -20,7 +20,8 @@ var productSchema = new mongoose.Schema({
     productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting", "Acessory","Spray"]},
     productBGcolor: {type: String, default: "Peach"}, 
     productImage:{type: Buffer},
-    productImageLink: {type: String}
+    productImageLink: {type: String},
+    productFlutterLink: {type: String, default : " "}
 
 });
 //asdf
