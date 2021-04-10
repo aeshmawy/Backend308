@@ -121,6 +121,8 @@ const upload = multer(
 
      if(req.body.productNumofRatings)
      {newProduct.productNumofRatings = req.body.productNumofRatings;}
+
+     newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
@@ -444,7 +446,7 @@ router.get('/filter' , async (req,res) =>{
     if(req.query.categories)
     {var categories = req.query.categories.split(",");}
     else
-    {var categories = ["Brush" , "Canvas" , "Paint", "Painting"]}
+    {var categories = ["Brush" , "Canvas" , "Paint", "Painting", "Acessory","Spray"]}
 
     if(req.query.brands)
     {var brands = req.query.brands.split(",")}
@@ -574,4 +576,47 @@ router.get('/bgcolor/:id' , async (req,res) =>{
 }
 )
 
+
+
+/**
+ * @swagger
+ * /product/imageLink/{id}:
+ *   put:
+ *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    tags: 
+ *    - product
+ *    parameters:
+ *       - in : path
+ *         name : id
+ *         type: string
+ *         required : true
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+
+ router.put('/imageLink/:id' , async (req,res) =>{
+
+    if(req.params.id)
+    {
+        if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
+        {
+            await Product.findByIdAndUpdate(req.params.id, {productImageLink: `http://localhost:5000/product/image/${req.params.id}`}
+            ,(err, wantedProduct) => 
+            {
+                if(err){return null}
+                else{return wantedProduct}
+            });
+            res.status(200).send("ImageLink has been updated")
+        }
+        else
+        {res.status(400).send("Please insert a correct id.")}
+        
+    }
+    else
+    {
+        res.status(400).send("Please insert an id.")
+    }
+}
+)
 module.exports = router;

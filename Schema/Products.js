@@ -17,10 +17,10 @@ var productSchema = new mongoose.Schema({
     productNumofRatings: {type: Number, min: 0 , default: 0},
     //productWarranty: {type:Number}
     productDistributor: {type: String , default: "Some Art Company"},
-    productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting"]},
-    productBGcolor: {type: String, default: "Peach"}, //TODO: make a put request to change this
-    productImage:{type: Buffer}
-
+    productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting", "Acessory","Spray"]},
+    productBGcolor: {type: String, default: "Peach"}, 
+    productImage:{type: Buffer},
+    productImageLink: {type: String}
 
 });
 //asdf
