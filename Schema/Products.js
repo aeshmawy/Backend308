@@ -17,9 +17,10 @@ var productSchema = new mongoose.Schema({
     productNumofRatings: {type: Number, min: 0 , default: 0},
     //productWarranty: {type:Number}
     productDistributor: {type: String , default: "Some Art Company"},
-    productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting", "Acessory","Spray"]},
+    productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting", "Accessory","Spray"]},
     productBGcolor: {type: String, default: "Peach"}, 
     productImage:{type: Buffer},
+    productComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     productImageLink: {type: String},
     productFlutterLink: {type: String, default : " "}
 
