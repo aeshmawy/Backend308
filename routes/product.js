@@ -236,7 +236,9 @@ async (req, res) =>
        {
             if(err){return null}
             else{return wantedProduct}
-       });
+       }).populate("productComments");
+       
+       console.log(wantedProduct);
     }
     else{wantedProduct = null;}
  

@@ -86,7 +86,7 @@ router.post('/:id', async (req, res) =>
  * @swagger
  * /comment/{id}:
  *   get:
- *    description: Posts a comment to product with id in path
+ *    description: give all comments of product of given id
  *    tags: 
  *    - Comments
  *    parameters:
