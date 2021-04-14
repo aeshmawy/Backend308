@@ -36,7 +36,7 @@ productSchema.index({
     weights: {
      productName: 5,
      productSize: 2,
-     productCategory: 5,
+     productCategory: 9,
      productDistributor: 2
     },
   });
