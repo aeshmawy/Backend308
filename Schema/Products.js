@@ -26,6 +26,6 @@ var productSchema = new mongoose.Schema({
 
 });
 //asdf
-productSchema.index({'$**' : 'text'});
+productSchema.index({productSize: 'text', productName: 'text', productDescription: 'text', productDistributor: 'text', productCategory: 'text'});
 var Product = mongoose.model('Products', productSchema);
 module.exports = Product;

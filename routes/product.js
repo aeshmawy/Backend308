@@ -480,9 +480,13 @@ router.get('/filter' , async (req,res) =>{
     {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
     .sort({productPrice: -1})}
     else
-    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})}
+    {
+        var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+        .find({$text: {$search: req.query.searchString}} , {productImage: 0})
+    }
     }
     catch{}
+    
     return res.status(200).send(ProductsSearched)
 })
 
