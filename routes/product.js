@@ -418,20 +418,23 @@ router.get('/search/:searchString', async (req,res) => {
  * @swagger
  * /product/filter:
  *   get:
- *    description: Returns a query according to the search term. (searchs all strings of the schema) 
+ *    description: Filters the products.
  *    tags: 
  *    - productFilter
  *    parameters:
  *       - in : query
  *         name : categories
  *         type: array
+ *         description: takes "Brush" , "Canvas" , "Paint", "Painting", "Acessory","Spray" as inputs
  *         items:
  *           type: string
  *       - in : query
  *         name : order
+ *         description: takes "ratings" , "popular", "ascending","descending" as inputs
  *         type: string
  *       - in : query
  *         name: brands
+ *         description: any product brand that exists in the db works(field "product distributor")
  *         type: array
  *         items:
  *           type: string
