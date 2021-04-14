@@ -467,25 +467,29 @@ router.get('/filter' , async (req,res) =>{
     })
     }
     
+    if(req.query.searchString)
+    {var searchString = req.query.searchString; }
+    else
+    {var searchString = "Brush Canvas Paint Spray Accessory";}
     
     
     try{
     if(req.query.order === "ratings")
     {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
-    .sort({productRating: -1 , productNumofRatings: -1})}
+    .find({$text: {$search: searchString}} , {productImage: 0}).sort({productRating: -1 , productNumofRatings: -1})}
     else if(req.query.order === "popular")
     {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
-    .sort({productNumofRatings: -1 , productRating: -1}) }
+    .find({$text: {$search: searchString}} , {productImage: 0}).sort({productNumofRatings: -1 , productRating: -1}) }
     else if (req.query.order === "ascending")
     {var ProductsSearched = await Product.find({productCategory: {$in: categories} , productDistributor : {$in: brands}} ,{productImage: 0})
-    .sort({productPrice: 1})}
+    .find({$text: {$search: searchString}} , {productImage: 0}).sort({productPrice: 1})}
     else if (req.query.order === "descending")
     {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
-    .sort({productPrice: -1})}
+    .find({$text: {$search: searchString}} , {productImage: 0}).sort({productPrice: -1})}
     else
     {
         var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
-        .find({$text: {$search: req.query.searchString}} , {productImage: 0})
+        .find({$text: {$search: searchString}} , {productImage: 0});
     }
     }
     catch{}

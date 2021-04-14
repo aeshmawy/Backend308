@@ -26,6 +26,22 @@ var productSchema = new mongoose.Schema({
 
 });
 //asdf
-productSchema.index({productSize: 'text', productName: 'text', productDescription: 'text', productDistributor: 'text', productCategory: 'text'});
+
+productSchema.index({
+    'productSize': 'text',
+    'productName': 'text',
+    'productCategory': 'text' ,
+    'productDistributor': 'text'
+  }, {
+    weights: {
+     productName: 5,
+     productSize: 2,
+     productCategory: 5,
+     productDistributor: 2
+    },
+  });
+  
 var Product = mongoose.model('Products', productSchema);
+Product.syncIndexes();
+
 module.exports = Product;
