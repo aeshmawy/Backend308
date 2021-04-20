@@ -19,7 +19,7 @@ var productSchema = new mongoose.Schema({
     productDistributor: {type: String , default: "Some Art Company"},
     productCategory: {type: String , enum:["Brush" , "Canvas" , "Paint", "Painting", "Accessory","Spray"]},
     productBGcolor: {type: String, default: "Peach"}, 
-    productImage:{type: Buffer},
+    productImage:{type: Buffer,select: false,},
     productComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     productImageLink: {type: String},
     productFlutterLink: {type: String, default : " "}

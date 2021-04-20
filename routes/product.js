@@ -280,12 +280,7 @@ async (req, res) =>
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
     {
        var  wantedProduct = 
-       await Product.findById(req.params.id
-       ,(err, wantedProduct) => 
-       {
-            if(err){return null}
-            else{return wantedProduct}
-       });
+       await Product.findById(req.params.id).select("+productImage");
     }
     else{wantedProduct = null;}
 

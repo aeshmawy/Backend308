@@ -161,7 +161,8 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
 router.get('/', async (req, res) =>{
     if(req.session.loggedIn === true)
     {
-        var founduser = await User.findById(req.session.user._id);
+        var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
+        
         res.status(200).send(founduser.userCart);
     }
     else if(req.session)
