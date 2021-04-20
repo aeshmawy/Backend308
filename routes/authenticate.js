@@ -62,6 +62,9 @@ router.put('/sendemail' ,async (req,res) =>{
         return res.status(400).send("Email does not exist in database")
     }
   }
+  else{
+    res.status(400).send("User is not logged in")
+  }
 });
 
 
