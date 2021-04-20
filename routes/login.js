@@ -5,12 +5,17 @@ var router = express.Router();
 const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
+var session = require('express-session');
+
+
 
 /**
  * @swagger
  * /login:
  *   post:
  *    description: Give a json file containing a username and password. 
+ *    tags: 
+ *      - log
  *    parameters:
  *       - in : body
  *         name : SomeUser
@@ -33,37 +38,43 @@ var User =  require("../Schema/User");
  *        description: Something has gone terribly wrong.
  */
  router.post('/', async (req,res) => {
+  
   var email = req.body.email;
   var password = req.body.password;
-  var inDatabase;
+  
+  
   if(email && password)
   {
+    
   var userInfo = await User.findOne({email: email}, (err,userInfo) =>
   {
     if(err)
     {
       console.log(err);
-      inDatabase = false;
+      
       return res.status(500).send("Wrong information")
     }
     if(!userInfo)
     {
-      inDatabase = false;
-      return res.status(400).send("User does not exist.");
+      
+      return userInfo;
     }
     else if(userInfo)
     {
-      inDatabase = true;
+      
       return userInfo;
     }
     
   });
-
-  if(inDatabase)
+  
+  if(userInfo)
   {
     if(await bcrypt.compare(password,userInfo.password) )
     {
       //return a jwt token here
+      req.session.loggedIn = true;
+      req.session.user = userInfo;
+      
       jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
       (err, token) => {
         if(err)
@@ -82,9 +93,14 @@ var User =  require("../Schema/User");
       return res.status(400).send("Wrong Password");
     }
   }
+  else
+  {
+    return res.status(400).send("User does not exist");
+  }
 }
   
 });
+
 
 
 module.exports = router;

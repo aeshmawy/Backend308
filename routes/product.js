@@ -499,6 +499,42 @@ router.get('/filter' , async (req,res) =>{
 
 /**
  * @swagger
+ * /product/bestsellers:
+ *   get:
+ *    description: Returns all products with bestsellers = true.
+ *    tags: 
+ *    - productFilter
+ *    responses:
+ *      200:
+ *        description: Successful get
+ */
+
+ router.get('/bestsellers', async(req,res) =>
+ {
+     var ProductsSearched = await Product.find({productBestseller: true},{productImage: 0});
+     res.status(200).send(ProductsSearched);
+ });
+ 
+ /**
+  * @swagger
+  * /product/discounts:
+  *   get:
+  *    description: Returns all products with discounts. sorted by highest discount percentage to lowest
+  *    tags: 
+  *    - productFilter
+  *    responses:
+  *      200:
+  *        description: Successful get
+  */
+ router.get('/discounts', async(req,res) =>
+ {
+     var ProductsSearched = await Product.find({ "productDiscount"  : {$gt : 0}} , {productImage: 0}).sort({productDiscount: -1});
+     res.status(200).send(ProductsSearched);
+ })
+
+ 
+/**
+ * @swagger
  * /product/bgcolor/{id}:
  *   get:
  *    description: Returns a query according to the search term. (searchs all strings of the schema) 

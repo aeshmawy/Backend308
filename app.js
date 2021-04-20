@@ -2,6 +2,7 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var logger = require('morgan');
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
@@ -12,9 +13,19 @@ var loginRouter = require('./routes/login');
 var registerRouter = require('./routes/register');
 var productRouter = require('./routes/product');
 var commentRouter = require('./routes/comment');
+var authRouter = require('./routes/authenticate');
+var cartRouter = require('./routes/cart');
+var logoutRouter = require('./routes/logout');
 
 var app = express();
 
+var store = new session.MemoryStore();
+app.use(session({
+  secret: "cool",
+  cookie: {maxAge: 3600000},
+  saveUninitialized: false,
+  
+}));
 //SWAGGER 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -54,7 +65,9 @@ app.use('/register', registerRouter);
 app.use('/users', usersRouter);
 app.use('/product', productRouter);
 app.use('/comment', commentRouter);
-
+app.use('/authenticate', authRouter);
+app.use('/cart', cartRouter);
+app.use('/logout', logoutRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

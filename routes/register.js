@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var validator = require('validator');
+var session = require('express-session');
 const jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
@@ -11,6 +12,8 @@ var User =  require("../Schema/User");
  * /register:
  *  post:
  *    description: username and password are required. usertype is not. (default for isSM and isPM is false)
+ *    tags:
+ *      - log
  *    parameters:
  *     - in: body
  *       name: email
@@ -82,6 +85,8 @@ router.post('/' , async (req,res) =>
     {
       var userinfo = newuser;
       var token = jwt.sign({newuser} , "tempprivatekey" , { expiresIn: "1h" });
+      req.session.loggedIn = true;
+      req.session.user = userinfo;
       res.status(200).json({msg :  "User has been successfully added" , token,userinfo  })
   
     }
