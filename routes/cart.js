@@ -80,8 +80,17 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                     else
                     {
                         founduser.userCart[isUnique].Quantity = parseInt(founduser.userCart[isUnique].Quantity, 10) + parseInt(req.params.quantity, 10);
-                        founduser.save();
-                        res.status(200).send("Logged In : Same Element added")
+                        if(founduser.userCart[isUnique].Quantity > wantedProduct.productStock)
+                        {
+                            res.status(400).send("Cant add anymore of the element to the cart.")
+                        }
+                        else{
+                            founduser.save();
+                            res.status(200).send("Logged In : Same Element added")
+                        }
+                        
+                        
+                        
                     }
                     
                 }
@@ -97,8 +106,14 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                         }
                         else
                         {
-                            req.session.userCart[isUnique].Quantity = req.session.userCart[isUnique].Quantity + req.params.quantity;
-                            res.status(200).send("Logged Out : Same Element added")
+                            req.session.userCart[isUnique].Quantity = parseInt(req.session.userCart[isUnique].Quantity,10) + parseInt(req.params.quantity, 10);;
+                            if(req.session.userCart[isUnique].Quantity > wantedProduct.productStock)
+                            {
+                                res.status(400).send("Cant add anymore of the element to the cart.")
+                            }
+                            else{
+                                res.status(200).send("Logged Out : Same Element added")
+                            }
                         }
                         
                     }
