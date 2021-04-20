@@ -21,6 +21,23 @@ function Unique(array, element)
     return unique;
 }
 
+function inCart(array, productID)//array is cart, element is product id. check if product id is in cart
+{
+    var unique = -1;
+    
+    for(var i = 0; i < array.length; i++)
+    {
+        
+        if(array[i].Product._id.toString() === productID)
+        {
+            console.log(array[i].Product._id.toString()+ " "+ productID )
+            unique = i;
+            break;
+        }
+    }
+    return unique;
+}
+
 
 
 /**
@@ -66,7 +83,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 var addtocart = await Product.findByIdAndUpdate(req.params.productid, {productStock : newStock}, {new: true}).select("-productImage -productComments");
                 var element = {};
                 element.Product = addtocart;
-                element.Quantity = req.params.quantity;
+                element.Quantity = parseInt(req.params.quantity);
                 if(req.session.loggedIn === true)
                 {
                     var founduser = await User.findById(req.session.user._id);
@@ -144,6 +161,93 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
 
 });
 
+
+/**
+ * @swagger
+ * /cart/remove/{productid}/{quantity}:
+ *  delete:
+ *    description: delete from cart.
+ *    tags:
+ *      - cart
+ *    parameters:
+ *       - in : path
+ *         name: productid
+ *         required: true
+ *         type: string
+ *       - in : path
+ *         name: quantity
+ *         required: true
+ *         default : 1
+ *         type: number
+ *    responses:
+ *      '200':
+ *        description: found cart successfully
+ *      '400':
+ *        description: no such user
+ */
+ router.delete('/remove/:productid/:quantity', async (req, res) =>{
+    
+    if (req.params.productid.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+        if(req.session.loggedIn === true)
+        {
+            
+            var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
+            var inCarto = inCart(founduser.userCart, req.params.productid);
+            if(inCarto === -1)
+            {
+                return res.status(400).send("Logged in: item is not in the cart")
+            }
+            else if(parseInt(req.params.quantity) < parseInt(founduser.userCart[inCarto].Quantity))
+            {
+                founduser.userCart[inCarto].Quantity = parseInt(founduser.userCart[inCarto].Quantity) - parseInt(req.params.quantity)
+                founduser.save();
+                return res.status(200).send(req.params.quantity + " of the item have been removed from the cart(item is still in cart)")
+            }
+            else if(parseInt(req.params.quantity) === parseInt(founduser.userCart[inCarto].Quantity))
+            {
+                
+                founduser.userCart.splice(inCarto, 1);
+                founduser.save();
+                return res.status(200).send("Logged in: Item has been completely removed from the cart")
+            }
+            else{
+                console.log(founduser.userCart[inCarto].Quantity);
+                return res.status(400).send("Logged in: You cannot remove that many items")
+            }
+        }
+        else if(req.session.userCart)
+        {
+            var inCarto = inCart(req.session.userCart, req.params.productid);
+            if(inCarto === -1)
+            {
+                return res.status(400).send("Logged out:Item is not in the cart")
+            }
+            else if(parseInt(req.params.quantity) < parseInt(req.session.userCart[inCarto].Quantity))
+            {
+                req.session.userCart[inCarto].Quantity = parseInt(req.session.userCart[inCarto].Quantity) - parseInt(req.params.quantity)
+                
+                return res.status(200).send(req.params.quantity + " of the item have been removed from the cart(item is still in cart)")
+            }
+            else if(parseInt(req.params.quantity) === parseInt(req.session.userCart[inCarto].Quantity))
+            {
+                req.session.userCart.splice(inCart, 1);
+                
+                return res.status(200).send("Item has been removed from the cart")
+            }
+            else{
+                return res.status(400).send("You cannot remove that many items")
+            }
+        }
+    }
+    else
+    {
+        res.status(400).send("Product id is not valid");s
+    }
+    
+
+});
+
 /**
  * @swagger
  * /cart:
@@ -165,12 +269,12 @@ router.get('/', async (req, res) =>{
         
         res.status(200).send(founduser.userCart);
     }
-    else if(req.session)
+    else if(req.session.userCart)
     {
         res.status(200).send(req.session.userCart);
     }
     else{
-        res.status(200).send("Cart is empty");
+        res.status(200).json([]);
     }
  })
 
