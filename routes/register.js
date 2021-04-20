@@ -74,7 +74,7 @@ router.post('/' , async (req,res) =>
   else {return res.status(400).send("Please insert a password.");}
   
   
-   newuser.save((err, Saveduser) => {
+   await newuser.save((err, Saveduser) => {
 
     if(err)
     { 
@@ -87,7 +87,7 @@ router.post('/' , async (req,res) =>
       var token = jwt.sign({newuser} , "tempprivatekey" , { expiresIn: "1h" });
       req.session.loggedIn = true;
       req.session.user = userinfo;
-      userinfo.save();
+      
       res.status(200).json({msg :  "User has been successfully added" , token,userinfo  })
   
     }

@@ -69,7 +69,6 @@ router.put('/sendemail' ,async (req,res) =>{
     {
         var passcode = randomstring.generate(8);
         req.flash('passcode', `${passcode}`);
-        req.flash('email', `${req.body.email}`);
         autoEmail(req.session.user.email , passcode);
         
         
@@ -114,9 +113,9 @@ router.put('/sendemail' ,async (req,res) =>{
     
     if(req.flash('passcode')[0] === req.body.passcode)
     {
-        var emailtaken = req.flash('email');
+        var emailtaken = req.session.user.email;
         await User.findOneAndUpdate({email: emailtaken}, {isAuthen : true});
-        
+        console.log(emailtaken)
         res.status(200).send("User Email has been authenticated")
     }
     else{
