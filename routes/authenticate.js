@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 
 var nodemailer = require("nodemailer");
+var { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
 var randomstring = require("randomstring");
 var flash = require('connect-flash');
 var User =  require("../Schema/User");
@@ -10,6 +12,15 @@ var session = require('express-session')
 
 router.use(flash());
 
+const oauth2Client = new OAuth2(
+  "293929424947-o6b6m9pt6go7sst01b6gc5pl6o28bglr.apps.googleusercontent.com", // ClientID
+  "jXSYqCjbxG87cML8KYGPqe2i", // Client Secret
+  "https://developers.google.com/oauthplayground" // Redirect URL
+);
+oauth2Client.setCredentials({
+  refresh_token: "1//04xcIBmuenaVnCgYIARAAGAQSNwF-L9IrSHb0U4vo8hqpAPeHy-VXcnIis9NmGYz-Jw6yOPzmwWdM8eWvQdkvekO_VeSgvFxDsH4"
+});
+const accessToken = oauth2Client.getAccessToken();
 
 async function autoEmail(email , passcode) {
     //Email we are sending from. Do not change transporter values.
@@ -17,9 +28,16 @@ async function autoEmail(email , passcode) {
     let transporter = nodemailer.createTransport({
      service: "Gmail",
      auth: {
-       user: "feelsbadneed@gmail.com", // generated ethereal user
-       pass: "genericpassword@123", // generated ethereal password
-     },
+      type: "OAuth2",
+      user: "feelsbadneed@gmail.com", 
+      clientId: "293929424947-o6b6m9pt6go7sst01b6gc5pl6o28bglr.apps.googleusercontent.com",
+      clientSecret: "jXSYqCjbxG87cML8KYGPqe2i",
+      refreshToken: "1//04xcIBmuenaVnCgYIARAAGAQSNwF-L9IrSHb0U4vo8hqpAPeHy-VXcnIis9NmGYz-Jw6yOPzmwWdM8eWvQdkvekO_VeSgvFxDsH4",
+      accessToken: accessToken
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
    });
    
    let info = await transporter.sendMail({
