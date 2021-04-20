@@ -45,7 +45,7 @@ var Comment = require('../Schema/Comment');
 router.post('/:id', async (req, res) =>
 {//TODO: validate token and check if usertype is 1
     //get product
-    if(req.body.rating && req.body.content && req.body.approved != undefined)
+    if(req.body.rating && req.body.content && req.body.approved !== undefined)
     {
         var comment = new Comment({
             content: req.body.content,
