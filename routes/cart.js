@@ -43,7 +43,7 @@ function inCart(array, productID)//array is cart, element is product id. check i
 /**
  * @swagger
  * /cart/add/{productid}/{quantity}:
- *  post:
+ *  put:
  *    description: get cart.
  *    tags:
  *      - cart
@@ -63,7 +63,7 @@ function inCart(array, productID)//array is cart, element is product id. check i
  *      '400':
  *        description: no such user
  */
-router.post('/add/:productid/:quantity', async (req, res) =>{
+router.put('/add/:productid/:quantity', async (req, res) =>{
     console.log(req.sessionID);
     if (req.params.productid.match(/^[0-9a-fA-F]{24}$/)) 
     {
