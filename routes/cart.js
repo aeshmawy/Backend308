@@ -64,7 +64,7 @@ function inCart(array, productID)//array is cart, element is product id. check i
  *        description: no such user
  */
 router.post('/add/:productid/:quantity', async (req, res) =>{
-    
+    console.log(req.sessionID);
     if (req.params.productid.match(/^[0-9a-fA-F]{24}$/)) 
     {
         var  wantedProduct = 
@@ -263,6 +263,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  */
 
 router.get('/', async (req, res) =>{
+    console.log(req.sessionID);
     if(req.session.loggedIn === true)
     {
         var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
