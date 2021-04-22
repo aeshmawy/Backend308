@@ -123,6 +123,7 @@ const upload = multer(
      {newProduct.productNumofRatings = req.body.productNumofRatings;}
 
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
+     newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
