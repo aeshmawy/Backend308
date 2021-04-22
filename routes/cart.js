@@ -279,4 +279,7 @@ router.get('/', async (req, res) =>{
     }
  })
 
+ router.get('/test',async(req,res)=>{
+    res.render('index');
+ })
 module.exports = router;

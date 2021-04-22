@@ -19,7 +19,7 @@ var router = express.Router();
  */
  router.post('/', async (req,res) => {
      
-    if(req.session.loggedIn)
+    if(req.session.loggedIn === true)
     {
       req.session.destroy();
       res.status(200).send("Successful Log out")
