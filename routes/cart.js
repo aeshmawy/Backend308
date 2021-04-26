@@ -266,13 +266,29 @@ router.get('/', async (req, res) =>{
     console.log(req.session.id);
     if(req.session.loggedIn === true)
     {
-        var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
-        
-        res.status(200).send(founduser.userCart);
+        var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();
+        var easierToAccess = [];
+        var element = {};
+        for(var i = 0; i < founduser.userCart.length;i++)
+        {
+            founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
+            element = founduser.userCart[i].Product;
+            easierToAccess.push(element);
+        }
+        console.log(element);
+        res.status(200).send(easierToAccess);
     }
     else if(req.session.userCart)
     {
-        res.status(200).send(req.session.userCart);
+        var easierToAccess = [];
+        var element = {};
+        for(var i = 0; i < req.session.userCart.length;i++)
+        {
+            req.session.userCart[i].Product.quantity = req.session.userCart[i].Quantity;
+            element = req.session.userCart[i].Product;
+            easierToAccess.push(element);
+        }
+        res.status(200).send(easierToAccess);
     }
     else{
         res.status(200).json([]);
@@ -282,4 +298,5 @@ router.get('/', async (req, res) =>{
  router.get('/test',async(req,res)=>{
     res.render('index');
  })
+ 
 module.exports = router;
