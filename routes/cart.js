@@ -297,7 +297,7 @@ router.get('/', async (req, res) =>{
             totalprice += (req.session.userCart[i].Product.productPrice * req.session.userCart[i].Quantity )
             easierToAccess.push(element);
         }
-        req.session.totalprice = parseFloat(num).toFixed(2);
+        req.session.totalprice = parseFloat(totalprice).toFixed(2);
         console.log(typeof(req.session.totalprice))
         res.status(200).send(easierToAccess);
     }
