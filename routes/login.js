@@ -16,6 +16,7 @@ var session = require('express-session');
  *    description: Give a json file containing a username and password. 
  *    tags: 
  *      - log
+ *      - test
  *    parameters:
  *       - in : body
  *         name : SomeUser
@@ -73,8 +74,9 @@ var session = require('express-session');
     {
       //return a jwt token here
       req.session.loggedIn = true;
+      userInfo.password = null;
       req.session.user = userInfo;
-      
+      console.log(req.session.user);
       jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
       (err, token) => {
         if(err)

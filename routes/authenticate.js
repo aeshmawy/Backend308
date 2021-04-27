@@ -8,47 +8,12 @@ var randomstring = require("randomstring");
 var flash = require('connect-flash');
 var User =  require("../Schema/User");
 var database = require("../Schema/dbconnect.js");
-var session = require('express-session')
+var session = require('express-session');
+var Email = require('../email');
 
 router.use(flash());
 
-const oauth2Client = new OAuth2(
-  "293929424947-o6b6m9pt6go7sst01b6gc5pl6o28bglr.apps.googleusercontent.com", // ClientID
-  "jXSYqCjbxG87cML8KYGPqe2i", // Client Secret
-  "https://developers.google.com/oauthplayground" // Redirect URL
-);
-oauth2Client.setCredentials({
-  refresh_token: "1//04xcIBmuenaVnCgYIARAAGAQSNwF-L9IrSHb0U4vo8hqpAPeHy-VXcnIis9NmGYz-Jw6yOPzmwWdM8eWvQdkvekO_VeSgvFxDsH4"
-});
-const accessToken = oauth2Client.getAccessToken();
 
-async function autoEmail(email , passcode) {
-    //Email we are sending from. Do not change transporter values.
-    
-    let transporter = nodemailer.createTransport({
-     service: "Gmail",
-     auth: {
-      type: "OAuth2",
-      user: "feelsbadneed@gmail.com", 
-      clientId: "293929424947-o6b6m9pt6go7sst01b6gc5pl6o28bglr.apps.googleusercontent.com",
-      clientSecret: "jXSYqCjbxG87cML8KYGPqe2i",
-      refreshToken: "1//04xcIBmuenaVnCgYIARAAGAQSNwF-L9IrSHb0U4vo8hqpAPeHy-VXcnIis9NmGYz-Jw6yOPzmwWdM8eWvQdkvekO_VeSgvFxDsH4",
-      accessToken: accessToken
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-   });
-   
-   let info = await transporter.sendMail({
-     from: 'CS308 Team 17 <noreply@cs308.com>', // sender address
-     to: email, // list of receivers
-     subject: "Please Authenticate your email", // Subject line
-     
-     html: `<b>${passcode}</b>`, // html body
-   });
-   //console.log("Message sent: %s", info.messageId);
-  }
 
 /**
  * @swagger
@@ -69,7 +34,7 @@ router.put('/sendemail' ,async (req,res) =>{
     {
         var passcode = randomstring.generate(8);
         req.flash('passcode', `${passcode}`);
-        autoEmail(req.session.user.email , passcode);
+        Email.autoEmail(req.session.user.email , passcode);
         
         
         res.status(200).send("Email Sent")

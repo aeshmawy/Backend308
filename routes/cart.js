@@ -86,7 +86,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 element.Quantity = parseInt(req.params.quantity);
                 if(req.session.loggedIn === true)
                 {
-                    var founduser = await User.findById(req.session.user._id);
+                    var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
                     var isUnique = Unique(founduser.userCart, element);
                     if( isUnique === -1)
                     {
@@ -109,6 +109,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                         
                         
                     }
+                    req.session.user.userCart = founduser.userCart;
                     
                 }
                 else if(!req.session.loggedIn)
@@ -202,6 +203,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
             {
                 founduser.userCart[inCarto].Quantity = parseInt(founduser.userCart[inCarto].Quantity) - parseInt(req.params.quantity)
                 founduser.save();
+                req.session.user.userCart = founduser.userCart;
                 return res.status(200).send(req.params.quantity + " of the item have been removed from the cart(item is still in cart)")
             }
             else if(parseInt(req.params.quantity) === parseInt(founduser.userCart[inCarto].Quantity))
@@ -209,12 +211,14 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 
                 founduser.userCart.splice(inCarto, 1);
                 founduser.save();
+                req.session.user.userCart = founduser.userCart;
                 return res.status(200).send("Logged in: Item has been completely removed from the cart")
             }
             else{
                 console.log(founduser.userCart[inCarto].Quantity);
                 return res.status(400).send("Logged in: You cannot remove that many items")
             }
+            
         }
         else if(req.session.userCart)
         {
@@ -255,6 +259,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  *    description: get cart.
  *    tags:
  *      - cart
+ *      - test
  *    responses:
  *      '200':
  *        description: found cart successfully
@@ -264,6 +269,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
 
 router.get('/', async (req, res) =>{
     console.log(req.session.id);
+    var totalprice = 0;
     if(req.session.loggedIn === true)
     {
         var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();
@@ -272,10 +278,12 @@ router.get('/', async (req, res) =>{
         for(var i = 0; i < founduser.userCart.length;i++)
         {
             founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
+            totalprice += (founduser.userCart[i].Product.productPrice * founduser.userCart[i].Quantity )
             element = founduser.userCart[i].Product;
             easierToAccess.push(element);
         }
-        console.log(element);
+        req.session.totalprice = parseFloat(totalprice).toFixed(2);
+        console.log(typeof(req.session.totalprice))
         res.status(200).send(easierToAccess);
     }
     else if(req.session.userCart)
@@ -286,8 +294,11 @@ router.get('/', async (req, res) =>{
         {
             req.session.userCart[i].Product.quantity = req.session.userCart[i].Quantity;
             element = req.session.userCart[i].Product;
+            totalprice += (req.session.userCart[i].Product.productPrice * req.session.userCart[i].Quantity )
             easierToAccess.push(element);
         }
+        req.session.totalprice = parseFloat(num).toFixed(2);
+        console.log(typeof(req.session.totalprice))
         res.status(200).send(easierToAccess);
     }
     else{
