@@ -468,8 +468,7 @@ router.get('/filter' , async (req,res) =>{
     else
     {var searchString = "Brush Canvas Paint Spray Accessory";}
 
-    var regex = new RegExp(searchString,'i');
-    var pog = { $or: [{productName: regex },{productCategory: regex}, {productDistributor:regex}]}
+
     try{
     if(req.query.order === "ratings")
     {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
@@ -486,7 +485,7 @@ router.get('/filter' , async (req,res) =>{
     else
     {
         var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
-        .find(pog , {productImage: 0});
+        .find({$text: {$search: searchString}} , {productImage: 0});
     }
     }
     catch{}
