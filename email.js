@@ -83,7 +83,7 @@ async function autoInvoice(details, userCart, email) {
             {
                 filename: 'invoice.pdf',                                         
                 contentType: 'application/pdf',
-                path: "C:\\Users\\ahmed\\Desktop\\CleanMaster\\team17_backend\\invoice.pdf"
+                path: "invoice.pdf"
             }]
         });
 }
@@ -97,7 +97,7 @@ async function createInvoice(invoice) {
     generateFooter(doc);
   
     doc.end();
-    doc.pipe(fs.createWriteStream("C:\\Users\\ahmed\\Desktop\\CleanMaster\\team17_backend\\invoice.pdf"));
+    doc.pipe(fs.createWriteStream("invoice.pdf"));
 }
 
 function generateHeader(doc) {
