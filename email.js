@@ -170,7 +170,7 @@ async function generateInvoiceTable(doc, invoice) {
       generateHr(doc, 240);
     for (var i = 0; i < invoice.items.length; i++) {
       var currentitem = await Product.findById(invoice.items[i].Product._id);
-    
+      console.log("I am here :"+i );
       var position = 220 + (30 * (i + 1)); 
       generateTableRow(
         doc,
