@@ -81,7 +81,7 @@ async function autoInvoice(details, userCart, email) {
         subject: "Invoice of your recent purchase", // Subject line
         attachments: [
             {
-                filename: 'invoice${invoice._id}.pdf',                                         
+                filename: `invoice${invoice._id}.pdf`,                                         
                 contentType: 'application/pdf',
                 path: `invoices/invoice${invoice._id}.pdf`
             }]
