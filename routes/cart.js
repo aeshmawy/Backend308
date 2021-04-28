@@ -209,8 +209,10 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
             }
             else if(parseInt(req.params.quantity) === parseInt(founduser.userCart[inCarto].Quantity))
             {
+                if(inCarto === req.session.userCart.length)
+                {founduser.userCart.pop();}
+                else{founduser.userCart.splice(inCarto, 1);}
                 
-                founduser.userCart.splice(inCarto, 1);
                 founduser.save();
                 req.session.user.userCart = founduser.userCart;
                 return res.status(200).send("Logged in: Item has been completely removed from the cart")
@@ -236,8 +238,9 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
             }
             else if(parseInt(req.params.quantity) === parseInt(req.session.userCart[inCarto].Quantity))
             {
-                req.session.userCart.splice(inCart, 1);
-                
+                if(inCarto === req.session.userCart.length)
+                {req.session.userCart.pop();}
+                else{req.session.userCart.splice(inCarto, 1);}
                 return res.status(200).send("Item has been removed from the cart")
             }
             else{
@@ -306,7 +309,7 @@ router.get('/', async (req, res) =>{
         res.status(200).send(easierToAccess);
     }
     else{
-        res.status(200).json([]);
+        res.status(200).json([]);   
     }
  })
 

@@ -240,7 +240,7 @@ async (req, res) =>
             else{return wantedProduct}
        }).populate("productComments");
        
-       console.log(wantedProduct);
+       
     }
     else{wantedProduct = null;}
  

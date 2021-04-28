@@ -15,11 +15,12 @@ var User = require('../Schema/User')
  * 
  */
 router.get('/totalprice', async (req,res) =>
-{
+{   console.log(typeof(req.session.totalprice))
     if(req.session.totalprice && req.session.loggedIn === true)
     res.status(200).send(req.session.totalprice);
     else
     res.status(400).send("Please run log in and get cart first");
+    
 });
 
 /**
