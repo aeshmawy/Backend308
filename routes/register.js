@@ -48,7 +48,7 @@ router.post('/' , async (req,res) =>
   var newuser = new User();
   if(req.body.email)
   {
-    if(validator.isEmail(req.body.email))
+    if(validator.isEmail(req.body.email))// somestring@somestring.xyz
     {
       if(await User.exists({ email: req.body.email}) )
       {return res.status(401).send("Email must be unique.")}
@@ -64,7 +64,7 @@ router.post('/' , async (req,res) =>
   
   
   
-  if(req.body.userType)
+  if(req.body.userType)//TODO: restrict this
   {newuser.userType = req.body.userType;}
 
   if(req.body.password)
@@ -86,6 +86,7 @@ router.post('/' , async (req,res) =>
       var userinfo = newuser;
       var token = jwt.sign({newuser} , "tempprivatekey" , { expiresIn: "1h" });
       req.session.loggedIn = true;
+      userinfo.password = null;
       req.session.user = userinfo;
       
       res.status(200).json({msg :  "User has been successfully added" , token,userinfo  })

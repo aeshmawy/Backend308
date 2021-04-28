@@ -4,7 +4,7 @@ const Product = require('../Schema/Products');
 var fs = require('fs');
 var router = express.Router();
 
-var noImgPath = 'C:\\Users\\ahmed\\Desktop\\CS308 Backend\\images\\noImage.png';
+var noImgPath = 'logo.jpg';
 
 const upload = multer(
 {

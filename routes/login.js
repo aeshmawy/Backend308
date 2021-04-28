@@ -1,8 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');//todo: remove
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
 var session = require('express-session');
@@ -74,8 +73,8 @@ var session = require('express-session');
     {
       //return a jwt token here
       req.session.loggedIn = true;
-      userInfo.password = null;
-      req.session.user = userInfo;
+      userInfo.password = null;//deleting the password
+      req.session.user = userInfo;//storing userinfo in cookie
       console.log(req.session.user);
       jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
       (err, token) => {
