@@ -9,7 +9,8 @@ var invoiceSchema = new mongoose.Schema({
     postal_code:  {type: String},
     items: [{_id: false, Product: {type: mongoose.Schema.Types.ObjectId, ref: 'Products'}, Quantity: {type: Number}}],
     total: {type: String},
-    date: {type: Date}
+    date: {type: Date},
+    userEmail : {type: String}
 });
 
 var Invoice = mongoose.model('Invoice', invoiceSchema);

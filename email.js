@@ -56,6 +56,7 @@ async function autoInvoice(details, userCart, email) {
     invoice.postal_code =  details.zipCode,
     invoice.items = userCart ,
     invoice.total = details.totalprice,
+    invoice.userEmail = email,
     invoice.date = new Date()
      
     invoice.save();
@@ -171,6 +172,8 @@ async function generateInvoiceTable(doc, invoice) {
     for (var i = 0; i < invoice.items.length; i++) {
       var currentitem = await Product.findById(invoice.items[i].Product._id);
       console.log("I am here :"+i );
+      currentitem.productStock = currentitem.productStock - invoice.items[i].Quantity;//updating stock
+      currentitem.save();
       var position = 220 + (30 * (i + 1)); 
       generateTableRow(
         doc,

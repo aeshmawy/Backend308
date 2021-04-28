@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Email = require('../email');
-
+var User = require('../Schema/User')
 /**
  * @swagger
  * /purchase/totalprice:
@@ -175,8 +175,16 @@ router.post('/sendinvoice' , async (req,res) =>
         zipCode : req.session.details.zipCode
     });
 
-
+   
     Email.autoInvoice(req.session.details, req.session.user.userCart, req.session.user.email);
+    founduser = await User.findById(req.session.user._id)
+    for(var i = 0; i < founduser.userCart.length; i++)
+    {
+        if(!founduser.purchasedProducts.includes(founduser.userCart[i].Product._id))//if it doesnt include the prodct
+        founduser.purchasedProducts.push(founduser.userCart[i].Product._id)//push the product id
+    }
+    founduser.userCart = [];
+    founduser.save();
     res.status(200).send("Invoice sent");
 })
 
