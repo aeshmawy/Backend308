@@ -59,7 +59,7 @@ async function autoInvoice(details, userCart, email) {
     invoice.date = new Date()
      
     invoice.save();
-    createInvoice(invoice);
+    await createInvoice(invoice);
     let transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: {
