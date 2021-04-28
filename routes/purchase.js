@@ -37,6 +37,10 @@ router.get('/totalprice', async (req,res) =>
         req.session.totalprice = totalprice;
         res.status(200).send(parseFloat(totalprice).toFixed(2));
     }
+    else
+    {
+        res.status(200).send(0);
+    }
     
     
 });
