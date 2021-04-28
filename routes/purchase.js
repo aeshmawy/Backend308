@@ -16,11 +16,27 @@ var User = require('../Schema/User')
  * 
  */
 router.get('/totalprice', async (req,res) =>
-{   console.log(typeof(req.session.totalprice))
-    if(req.session.totalprice && req.session.loggedIn === true)
-    res.status(200).send(req.session.totalprice);
-    else
-    res.status(400).send("Please run log in and get cart first");
+{   if(req.session.loggedIn === true)
+    {var totalprice = 0;
+    founduser = await User.findById(req.session.user._id).populate("userCart.Product");
+    for(var i = 0; i < founduser.userCart.length;i++)
+    {
+        founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
+        totalprice += (founduser.userCart[i].Product.productPrice * founduser.userCart[i].Quantity )
+    }
+    
+    res.status(200).send(parseFloat(totalprice).toFixed(2));
+    }   
+    else if(req.session.userCart)
+    {   var totalprice = 0;
+        for(var i = 0; i < req.session.userCart.length;i++)
+        {
+            req.session.userCart[i].Product.quantity = req.session.userCart[i].Quantity;
+            totalprice += (req.session.userCart[i].Product.productPrice * req.session.userCart[i].Quantity )
+        }
+        res.status(200).send(parseFloat(totalprice).toFixed(2));
+    }
+    
     
 });
 

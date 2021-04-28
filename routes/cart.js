@@ -90,7 +90,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                     var isUnique = Unique(founduser.userCart, element);
                     if( isUnique === -1)//it is unique
                     {
-        
+                        
                         founduser.userCart.push(element);
                         founduser.save();
                         res.status(200).send("Logged In : Unique Element added")
@@ -209,7 +209,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
             }
             else if(parseInt(req.params.quantity) === parseInt(founduser.userCart[inCarto].Quantity))
             {
-                if(inCarto === req.session.userCart.length)
+                if(inCarto === req.session.user.userCart.length)
                 {founduser.userCart.pop();}
                 else{founduser.userCart.splice(inCarto, 1);}
                 
