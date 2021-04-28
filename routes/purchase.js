@@ -24,7 +24,7 @@ router.get('/totalprice', async (req,res) =>
         founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
         totalprice += (founduser.userCart[i].Product.productPrice * founduser.userCart[i].Quantity )
     }
-    
+    req.session.totalprice = totalprice;
     res.status(200).send(parseFloat(totalprice).toFixed(2));
     }   
     else if(req.session.userCart)
@@ -34,6 +34,7 @@ router.get('/totalprice', async (req,res) =>
             req.session.userCart[i].Product.quantity = req.session.userCart[i].Quantity;
             totalprice += (req.session.userCart[i].Product.productPrice * req.session.userCart[i].Quantity )
         }
+        req.session.totalprice = totalprice;
         res.status(200).send(parseFloat(totalprice).toFixed(2));
     }
     
