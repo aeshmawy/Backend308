@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Email = require('../email');
+const Invoice = require('../Schema/Invoice');
 var User = require('../Schema/User')
 /**
  * @swagger
@@ -173,7 +174,8 @@ router.post('/sendinvoice' , async (req,res) =>
         SaddressCountry: req.session.details.SaddressCountry,
         SaddressCity: req.session.details.SaddressCity,
         SaddressStreet: req.session.details.SaddressStreet,
-        zipCode : req.session.details.zipCode
+        zipCode : req.session.details.zipCode,
+        date : Date.now(),
     });
 
    
@@ -186,7 +188,7 @@ router.post('/sendinvoice' , async (req,res) =>
     }
     founduser.userCart = [];
     founduser.save();
-    res.status(200).send("Invoice sent");
+    res.status(200).send(details);
 })
 
 

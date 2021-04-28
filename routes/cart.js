@@ -30,7 +30,7 @@ function inCart(array, productID)//array is cart, element is product id. check i
         
         if(array[i].Product._id.toString() === productID)
         {
-            console.log(array[i].Product._id.toString()+ " "+ productID )
+           
             unique = i;
             break;
         }
@@ -64,7 +64,7 @@ function inCart(array, productID)//array is cart, element is product id. check i
  *        description: no such user
  */
 router.post('/add/:productid/:quantity', async (req, res) =>{
-    console.log(req.session.id);
+    
     if (req.params.productid.match(/^[0-9a-fA-F]{24}$/)) 
     {
         var  wantedProduct = 
@@ -218,7 +218,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 return res.status(200).send("Logged in: Item has been completely removed from the cart")
             }
             else{
-                console.log(founduser.userCart[inCarto].Quantity);
+                
                 return res.status(400).send("Logged in: You cannot remove that many items")
             }
             
@@ -274,7 +274,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  */
 
 router.get('/', async (req, res) =>{
-    console.log(req.session.id);
+   
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
@@ -290,7 +290,7 @@ router.get('/', async (req, res) =>{
         }
         req.session.totalprice = parseFloat(totalprice).toFixed(2);
         req.session.user.userCart = founduser.userCart;
-        console.log(typeof(req.session.totalprice))
+       
         res.status(200).send(easierToAccess);
     }
     else if(req.session.userCart)
@@ -305,7 +305,7 @@ router.get('/', async (req, res) =>{
             easierToAccess.push(element);
         }
         req.session.totalprice = parseFloat(totalprice).toFixed(2);
-        console.log(typeof(req.session.totalprice))
+        
         res.status(200).send(easierToAccess);
     }
     else{

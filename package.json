@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node --no-deprecation ./bin/www"
+    "start": "node --no-deprecation ./bin/www",
+    "test" : "mocha --no-deprecation test/test.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

@@ -294,7 +294,6 @@ describe('Logged out Cart Tests: ', async function() {
       .set('Cookie', Cookies)
       .then((res) => {
         Cookies = res.headers['set-cookie'].pop().split(';')[0];
-        console.log(res.body);
         expect(res.body[0].quantity).to.equal(2)
         expect(res.body[0]._id).to.equal("606b0c26e8e7d76230b427c7")
       });
