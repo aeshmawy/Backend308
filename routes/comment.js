@@ -43,9 +43,10 @@ var Comment = require('../Schema/Comment');
 router.post('/:id', async (req, res) =>
 {//TODO: validate token and check if usertype is 1
     //get product
+    console.log(req.session.user.isAuthen)
     if(req.session.loggedIn === true)
     {
-        if(res.session.user.isAuthen === true || true)//always true for testing. make
+        if(req.session.user.isAuthen || true)//always true for testing. make
         {
             if(req.body.rating && req.body.content && req.body.approved !== undefined)
             {
@@ -53,7 +54,7 @@ router.post('/:id', async (req, res) =>
                     content: req.body.content,
                     rating: req.body.rating,
                     approved: false,
-                    user: req.session.user._id
+                    user: req.session.user.email
                 })
                 var onProduct = await Product.findById(req.params.id, {productImage: 0}).populate("productComments");
                 var purchased = false;
@@ -77,7 +78,7 @@ router.post('/:id', async (req, res) =>
                         break;
                     }
                 }
-                if(unique && purchased)
+                if((unique && purchased) || true)//TODO: remove true
                 {
                     comment.save();
                     var onProduct = await Product.findByIdAndUpdate(req.params.id, {$push: {"productComments": comment}},

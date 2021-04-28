@@ -5,7 +5,7 @@ var nodemailer = require("nodemailer");
 var { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 var randomstring = require("randomstring");
-var flash = require('connect-flash');
+var flash = require('connect-flash');//this is useless but i didnt know hwo to use cookies before i used this
 var User =  require("../Schema/User");
 var database = require("../Schema/dbconnect.js");
 var session = require('express-session');
@@ -30,10 +30,10 @@ router.use(flash());
 router.put('/sendemail' ,async (req,res) =>{
   if(req.session.loggedIn === true)
   {
-    if(await User.exists({ _id: req.session.user._id}))
+    if(await User.exists({ _id: req.session.user._id}))//old code delete
     {
-        var passcode = randomstring.generate(8);
-        req.flash('passcode', `${passcode}`);
+        var passcode = randomstring.generate(8);//generate random passcode
+        req.flash('passcode', `${passcode}`);//here i can use cookies instead
         Email.autoEmail(req.session.user.email , passcode);
         
         

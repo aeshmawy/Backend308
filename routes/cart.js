@@ -88,13 +88,14 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 {
                     var founduser = await User.findById(req.session.user._id).populate("userCart.Product");
                     var isUnique = Unique(founduser.userCart, element);
-                    if( isUnique === -1)
+                    if( isUnique === -1)//it is unique
                     {
+        
                         founduser.userCart.push(element);
                         founduser.save();
                         res.status(200).send("Logged In : Unique Element added")
                     }
-                    else
+                    else//its not unique
                     {
                         founduser.userCart[isUnique].Quantity = parseInt(founduser.userCart[isUnique].Quantity, 10) + parseInt(req.params.quantity, 10);
                         if(founduser.userCart[isUnique].Quantity > wantedProduct.productStock)
@@ -114,7 +115,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 }
                 else if(!req.session.loggedIn)
                 {
-                    if(req.session.userCart)
+                    if(req.session.userCart)//checking if cart exists
                     {
                         var isUnique = Unique(req.session.userCart, element);
                         if( isUnique === -1)
@@ -243,10 +244,12 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 return res.status(400).send("You cannot remove that many items")
             }
         }
+        else
+        {res.status(400).send("UserCart is empty")}
     }
     else
     {
-        res.status(400).send("Product id is not valid");s
+        res.status(400).send("Product id is not valid");
     }
     
 
@@ -272,7 +275,7 @@ router.get('/', async (req, res) =>{
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
-        var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();
+        var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();//toobject allows me to add new fields
         var easierToAccess = [];
         var element = {};
         for(var i = 0; i < founduser.userCart.length;i++)

@@ -122,6 +122,7 @@ const upload = multer(
      if(req.body.productNumofRatings)
      {newProduct.productNumofRatings = req.body.productNumofRatings;}
 
+     newProduct.productFlutterLink = `http://10.0.2.2:5000/product/image/${newProduct._id}`  
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
      //console.log(newProduct);
@@ -202,7 +203,7 @@ async (req, res) =>
 
  router.get('/all', async (req,res) => {
     
-    var SearchedProducts = await Product.find( {} , {productImage: 0})
+    var SearchedProducts = await Product.find( {} , {productImage: 0})//exclude image buffer
     
     res.status(200).send(SearchedProducts);
 
