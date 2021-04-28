@@ -283,6 +283,7 @@ router.get('/', async (req, res) =>{
             easierToAccess.push(element);
         }
         req.session.totalprice = parseFloat(totalprice).toFixed(2);
+        req.session.user.userCart = founduser.userCart;
         console.log(typeof(req.session.totalprice))
         res.status(200).send(easierToAccess);
     }
