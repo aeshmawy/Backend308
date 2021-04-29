@@ -76,7 +76,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
         });
         if(wantedProduct)
         {
-            if(wantedProduct.productStock > req.params.quantity)
+            if(wantedProduct.productStock >= req.params.quantity)
             {
                 
                 var newStock = wantedProduct.productStock;//- req.params.quantity; should i adjust stock here?
@@ -273,17 +273,23 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  *        description: no such user
  */
 
-router.get('/', async (req, res) =>{
-    console.log("Headers: " + req.headers);
-    if(req.headers['Authorization'])
-    {
 
-        console.log(req.headers['Authorization'])
-        req.cookies = req.headers['Authorization'][0].substring(0,req.headers['Authorization'][0].search(';'));
+router.use(async (req, res,next) =>{
+    
+    if(req.header("Authorization") != null)
+    {
+        console.log("Headers: " + req.header("Authorization"));
+        res.set("cookie",req.header("Authorization").substring(0,req.header("Authorization").search(';')))
     }
+
+    next()
+})
+router.get('/', async (req, res) =>{
+    console.log(req.header('cookie'));
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
+        console.log('here');
         var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();//toobject allows me to add new fields
         var easierToAccess = [];
         var element = {};
