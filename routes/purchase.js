@@ -196,7 +196,7 @@ router.get('/sendinvoice' , async (req,res) =>
         SaddressCity: req.session.details.SaddressCity,
         SaddressStreet: req.session.details.SaddressStreet,
         zipCode : req.session.details.zipCode,
-        date : Date.now(),
+        date : Date.now().toISOString().slice(0,10),
     });
 
    

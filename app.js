@@ -23,9 +23,9 @@ var app = express();
 
 app.use(session({
   secret: "cool",
-  cookie: {maxAge: 3600000},
-  saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false },
+  sameSite: false,
+  
   
 }));
 

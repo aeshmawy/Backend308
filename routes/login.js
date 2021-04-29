@@ -75,7 +75,7 @@ var session = require('express-session');
       req.session.loggedIn = true;
       userInfo.password = null;//deleting the password
       req.session.user = userInfo;//storing userinfo in cookie
-      //console.log(req.session.user);
+      console.log(req.session._id)
       jwt.sign({userInfo , loggedIn : true} , "tempprivatekey" , { expiresIn: "1h" },
       (err, token) => {
         if(err)

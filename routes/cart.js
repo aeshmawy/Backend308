@@ -272,20 +272,8 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  *      '400':
  *        description: no such user
  */
-
-
-router.use(async (req, res,next) =>{
-    
-    if(req.header("Authorization") != null)
-    {
-        console.log("Headers: " + req.header("Authorization"));
-        res.set("cookie",req.header("Authorization").substring(0,req.header("Authorization").search(';')))
-    }
-
-    next()
-})
 router.get('/', async (req, res) =>{
-    console.log(req.header('cookie'));
+    console.log(req.cookies)
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
