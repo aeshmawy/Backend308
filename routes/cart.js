@@ -274,8 +274,10 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  */
 
 router.get('/', async (req, res) =>{
+    console.log("Headers: " + req.headers);
     if(req.headers['Authorization'])
     {
+
         console.log(req.headers['Authorization'])
         req.cookies = req.headers['Authorization'][0].substring(0,req.headers['Authorization'][0].search(';'));
     }
