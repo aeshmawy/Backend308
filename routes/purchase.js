@@ -187,6 +187,7 @@ router.post('/step2', async (req,res) =>
  */
 router.get('/sendinvoice' , async (req,res) =>
 {
+    var now = new  Date();
     var details = new Object({
         fullName: req.session.details.fullName,
         BaddressCountry: req.session.details.BaddressCountry,
@@ -196,7 +197,8 @@ router.get('/sendinvoice' , async (req,res) =>
         SaddressCity: req.session.details.SaddressCity,
         SaddressStreet: req.session.details.SaddressStreet,
         zipCode : req.session.details.zipCode,
-        date : Date.now().toISOString().slice(0,10),
+        date : Date(),
+        dateString: now.toISOString()
     });
 
    
