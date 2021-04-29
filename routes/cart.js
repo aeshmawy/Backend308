@@ -276,7 +276,8 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
 router.get('/', async (req, res) =>{
     if(req.headers['Authorization'])
     {
-        req.headers['cookies'] = req.headers['Authorization'];
+        console.log(req.headers['Authorization'])
+        req.cookies = req.headers['Authorization'][0].substring(0,req.headers['Authorization'][0].search(';'));
     }
     var totalprice = 0;
     if(req.session.loggedIn === true)
