@@ -92,7 +92,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                     {
                         
                         founduser.userCart.push(element);
-                        founduser.save();
+                        await founduser.save();
                         res.status(200).send("Logged In : Unique Element added")
                     }
                     else//its not unique
@@ -103,7 +103,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                             res.status(400).send("Cant add anymore of the element to the cart.")
                         }
                         else{
-                            founduser.save();
+                            await founduser.save();
                             res.status(200).send("Logged In : Same Element added")
                         }
                         
@@ -203,7 +203,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
             else if(parseInt(req.params.quantity) < parseInt(founduser.userCart[inCarto].Quantity))
             {
                 founduser.userCart[inCarto].Quantity = parseInt(founduser.userCart[inCarto].Quantity) - parseInt(req.params.quantity)
-                founduser.save();
+                await founduser.save();
                 req.session.user.userCart = founduser.userCart;
                 return res.status(200).send(req.params.quantity + " of the item have been removed from the cart(item is still in cart)")
             }
@@ -213,7 +213,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                 {founduser.userCart.pop();}
                 else{founduser.userCart.splice(inCarto, 1);}
                 
-                founduser.save();
+                await founduser.save();
                 req.session.user.userCart = founduser.userCart;
                 return res.status(200).send("Logged in: Item has been completely removed from the cart")
             }
