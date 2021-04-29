@@ -31,7 +31,7 @@ app.use(session({
 
 app.use(cors({origin: "http://localhost:3000",
 credentials: true,
-allowedHeaders:'cookie'
+allowedHeaders:'Content-Type,Authorization,cookie'
 }))
 
 //SWAGGER 
