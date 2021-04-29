@@ -274,7 +274,10 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  */
 
 router.get('/', async (req, res) =>{
-   
+    if(req.headers['Authorization'])
+    {
+        req.headers['cookies'] = req.headers['Authorization'];
+    }
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
