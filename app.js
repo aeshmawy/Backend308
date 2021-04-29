@@ -6,7 +6,7 @@ var session = require('express-session');
 var logger = require('morgan');
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
-
+var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -27,6 +27,8 @@ app.use(session({
   saveUninitialized: false,
   
 }));
+
+app.use(cors())
 
 //SWAGGER 
 const swaggerOptions = {
@@ -60,6 +62,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(function(req, res, next) {
+  res.setHeader('charset', 'utf-8')
+  next();
+});
 
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
