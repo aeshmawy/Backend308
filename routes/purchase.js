@@ -172,7 +172,7 @@ router.post('/step2', async (req,res) =>
 /**
  * @swagger
  * /purchase/sendinvoice:
- *  post:
+ *  get:
  *    description: Send invoice
  *    tags:
  *      - order    
@@ -185,7 +185,7 @@ router.post('/step2', async (req,res) =>
  *      '500':
  *        description: Something has gone terribly wrong.
  */
-router.post('/sendinvoice' , async (req,res) =>
+router.get('/sendinvoice' , async (req,res) =>
 {
     var details = new Object({
         fullName: req.session.details.fullName,
