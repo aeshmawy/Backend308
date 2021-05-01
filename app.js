@@ -25,7 +25,7 @@ app.use(session({
   secret: "cool",
   cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false,path: '/' },
   sameSite: 'none',
-  
+  proxy : true,
   
 }));
 app.options('*', 
@@ -34,7 +34,8 @@ cors(
     origin: "http://localhost:3000",
     methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
     credentials: true,
-    allowedHeaders:'Content-Type,Authorization,X-Requested-With'
+    allowedHeaders:'Content-Type,Authorization,X-Requested-With',
+    preflightContinue: true
 }))
 
   app.all('*', function(req, res, next) {
