@@ -23,19 +23,28 @@ var app = express();
 
 app.use(session({
   secret: "cool",
-  cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false },
+  cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false,path: '/' },
   sameSite: 'none',
   
   
 }));
 app.options('*', 
 cors(
-  {
+{
     origin: "http://localhost:3000",
     methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
     credentials: true,
     allowedHeaders:'Content-Type,Authorization,X-Requested-With'
-  }))
+}))
+
+  app.all('*', function(req, res, next) {
+
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
+    res.setHeader("Access-Control-Allow-Credentials", true);
+    next();
+});
+
 /* 
   app.use(cors({origin: "http://localhost:3000",
   credentials: true,
