@@ -23,16 +23,25 @@ var app = express();
 
 app.use(session({
   secret: "cool",
-  cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false },
-  sameSite: false,
+  cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false },
+  sameSite: 'none',
   
   
 }));
-
-app.use(cors({origin: "http://localhost:3000",
-credentials: true,
-allowedHeaders:'Content-Type,Authorization,cookie'
-}))
+app.options('*', 
+cors(
+  {
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
+    credentials: true,
+    allowedHeaders:'Content-Type,Authorization,X-Requested-With'
+  }))
+/* 
+  app.use(cors({origin: "http://localhost:3000",
+  credentials: true,
+  allowedHeaders:'Content-Type,Authorization,X-Requested-With'
+  }))
+*/
 
 //SWAGGER 
 const swaggerOptions = {

@@ -21,7 +21,10 @@ var router = express.Router();
      
     if(req.session.loggedIn === true)
     {
+      console.log("I am here")
+      console.log(req.session.user)
       req.session.destroy();
+      
       res.status(200).send("Successful Log out")
     }
     else

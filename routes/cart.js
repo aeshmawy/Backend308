@@ -273,11 +273,11 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
  *        description: no such user
  */
 router.get('/', async (req, res) =>{
-    console.log(req.cookies)
+    
     var totalprice = 0;
     if(req.session.loggedIn === true)
     {
-        console.log('here');
+        
         var founduser = (await User.findById(req.session.user._id).populate("userCart.Product")).toObject();//toobject allows me to add new fields
         var easierToAccess = [];
         var element = {};
