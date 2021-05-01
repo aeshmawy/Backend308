@@ -18,7 +18,7 @@ var router = express.Router();
  *        description: log out failed
  */
  router.post('/', async (req,res) => {
-     
+    console.log("I am here")
     if(req.session.loggedIn === true)
     {
       console.log("I am here")
