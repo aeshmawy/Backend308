@@ -21,6 +21,8 @@ var purchaseRouter = require('./routes/purchase');
 
 var app = express();
 
+app.set("trust proxy", 1)
+
 app.use(session({
   secret: "cool",
   cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false,path: '/' },
