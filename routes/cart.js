@@ -126,7 +126,7 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                         else
                         {
                             
-                            if(req.session.userCart[isUnique].Quantity > wantedProduct.productStock)
+                            if(req.session.userCart[isUnique].Quantity >= wantedProduct.productStock)
                             {
                                 res.status(400).send("Cant add anymore of the element to the cart.")
                             }
