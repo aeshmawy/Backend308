@@ -39,7 +39,7 @@ router.get('/totalprice', async (req,res) =>
     }
     else
     {
-        res.status(200).send(0);
+        res.status(200).send("0.00");
     }
     
     
