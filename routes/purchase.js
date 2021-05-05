@@ -18,28 +18,32 @@ var User = require('../Schema/User')
 router.get('/totalprice', async (req,res) =>
 {   if(req.session.loggedIn === true)
     {var totalprice = 0;
+    var totalDCprice = 0;
     founduser = await User.findById(req.session.user._id).populate("userCart.Product");
     for(var i = 0; i < founduser.userCart.length;i++)
     {
         founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
-        totalprice += (founduser.userCart[i].Product.productDCPrice * founduser.userCart[i].Quantity )
+        totalprice += (founduser.userCart[i].Product.productPrice * founduser.userCart[i].Quantity )
+        totalDCprice += (founduser.userCart[i].Product.productDCPrice * founduser.userCart[i].Quantity )
     }
-    req.session.totalprice = totalprice;
-    res.status(200).send(parseFloat(totalprice).toFixed(2));
+    req.session.totalprice = totalDCprice;
+    res.status(200).json({totalprice: parseFloat(totalprice).toFixed(2),totalDCprice: parseFloat(totalDCprice).toFixed(2)});
     }   
     else if(req.session.userCart)
     {   var totalprice = 0;
+        var totalDCprice = 0;
         for(var i = 0; i < req.session.userCart.length;i++)
         {
             req.session.userCart[i].Product.quantity = req.session.userCart[i].Quantity;
             totalprice += (req.session.userCart[i].Product.productPrice * req.session.userCart[i].Quantity )
+            totalDCprice += (req.session.userCart[i].Product.productDCPrice * req.session.userCart[i].Quantity )
         }
-        req.session.totalprice = totalprice;
-        res.status(200).send(parseFloat(totalprice).toFixed(2));
+        req.session.totalprice = totalDCprice;
+        res.status(200).json({totalprice: parseFloat(totalprice).toFixed(2),totalDCprice: parseFloat(totalDCprice).toFixed(2)});
     }
     else
     {
-        res.status(200).send("0.00");
+        res.status(200).json({totalprice: 0,totalDCprice: 0});
     }
     
     
