@@ -11,6 +11,7 @@ var productSchema = new mongoose.Schema({
     productDescription: {type:String , default: "Some description."},
     productStock: {type:Number , default : 10 , min: 0},
     productPrice: {type:Number, default: 15 ,min:0},
+    productDCPrice: {type:Number, default: 15 ,min:0},
     productDiscount: {type: Number , default: 5 ,min:0, max:100},
     productBestseller: {type: Boolean, default: false},
     productRating: {type:Number, min:0 , max: 5},
@@ -22,6 +23,7 @@ var productSchema = new mongoose.Schema({
     productImage:{type: Buffer,select: false,},
     productComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     productImageLink: {type: String},
+    onlineImageLink: {type: String},
     productFlutterLink: {type: String, default : " "}
 
 });

@@ -22,7 +22,7 @@ router.get('/totalprice', async (req,res) =>
     for(var i = 0; i < founduser.userCart.length;i++)
     {
         founduser.userCart[i].Product.quantity = founduser.userCart[i].Quantity;
-        totalprice += (founduser.userCart[i].Product.productPrice * founduser.userCart[i].Quantity )
+        totalprice += (founduser.userCart[i].Product.productDCPrice * founduser.userCart[i].Quantity )
     }
     req.session.totalprice = totalprice;
     res.status(200).send(parseFloat(totalprice).toFixed(2));
@@ -200,9 +200,10 @@ router.get('/sendinvoice' , async (req,res) =>
         date : Date(),
         dateString: now.toISOString()
     });
+    var something = await User.findById(req.session.user._id).select("userCart -_id")
 
-   
-    Email.autoInvoice(req.session.details, req.session.user.userCart, req.session.user.email);
+   console.log("here1: " + something.userCart)
+    Email.autoInvoice(req.session.details, something.userCart, req.session.user.email);
     founduser = await User.findById(req.session.user._id)
     for(var i = 0; i < founduser.userCart.length; i++)
     {
@@ -210,11 +211,58 @@ router.get('/sendinvoice' , async (req,res) =>
         founduser.purchasedProducts.push(founduser.userCart[i].Product._id)//push the product id
     }
     founduser.userCart = [];
-    founduser.save();
+    await founduser.save();
     res.status(200).send(details);
 })
 
 
+/**
+ * @swagger
+ * /purchase:
+ *  get:
+ *    description: get all purchases of the logged in user
+ *    tags:
+ *      - order    
+ *    responses:
+ *      '200':
+ *        description: Successful Registration(User has been added to the database)
+ *      '400':
+ *        description: Username or password is wrong
+ *      '500':
+ *        description: Something has gone terribly wrong.
+ */
+
+router.get('/', async (req,res) =>{
+
+    if(req.session.loggedIn === true)
+    {
+        invoices = await Invoice.find({userEmail: req.session.user.email}).populate("items.Product").sort({"date": -1});
+        var easyArr = []
+        var products = []
+        var element = new Object();
+        for(var i = 0; i < invoices.length; i++)
+        {
+            var products = []
+            element = invoices[i].toObject()
+            for(var j = 0; j < invoices[i].items.length; j++)
+            {
+                if(element.items[j].Product === undefined){break;}
+                element.items[j].Product.quantity =  invoices[i].items[j].Quantity
+                element.items[j].Product.PriceatPurchase =  invoices[i].items[j].PriceatPurchase
+                products.push(element.items[j].Product)
+            }
+            element.items = []
+            element.products = products 
+            
+            easyArr.push(element)
+        }
+        res.status(200).send(easyArr)
+    }
+    else
+    {
+        res.status(400).send("User is not logged in ")
+    }
+})
 
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');

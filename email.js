@@ -48,17 +48,22 @@ async function autoEmail(email , passcode) {
 async function autoInvoice(details, userCart, email) {
     //Email we are sending from. Do not change transporter values.
     var invoice = new Invoice();
-   
-    invoice.name = details.fullName,
-    invoice.address = details.SaddressStreet,
-    invoice.city = details.SaddressCity,
-    invoice.country = details.SaddressCountry,
-    invoice.postal_code =  details.zipCode,
-    invoice.items = userCart ,
-    invoice.total = details.totalprice,
-    invoice.userEmail = email,
+    //console.log(userCart)
+    invoice.name = details.fullName
+    invoice.address = details.SaddressStreet
+    invoice.city = details.SaddressCity
+    invoice.country = details.SaddressCountry
+    invoice.postal_code =  details.zipCode
+    invoice.items = userCart 
+    invoice.total = details.totalprice
+    invoice.userEmail = email
     invoice.date = new Date()
-     
+    invoice.status = "processing"
+    for(var i = 0; i < invoice.items.length; i++)
+    {
+      var currentitem = await Product.findById(invoice.items[i].Product._id);
+      invoice.items[i].PriceatPurchase = currentitem.productDCPrice
+    }
     invoice.save();
     await createInvoice(invoice);
     let transporter = nodemailer.createTransport({
@@ -144,7 +149,7 @@ generateHr(doc, 200);
 }
 
 
-function generateTableRow(doc, y, c1, c2, c3, c4, c5) {
+async function generateTableRow(doc, y, c1, c2, c3, c4, c5) {
 doc
     .fontSize(10)
     .text(c1, 50, y,{width: 100, height: 30, ellipsis: true})
@@ -169,26 +174,30 @@ async function generateInvoiceTable(doc, invoice) {
       
       
       generateHr(doc, 240);
+      var done = 0;
     for (var i = 0; i < invoice.items.length; i++) {
       var currentitem = await Product.findById(invoice.items[i].Product._id);
-      console.log("I am here :"+i );
+      //console.log("I am here :"+i );
       currentitem.productStock = currentitem.productStock - invoice.items[i].Quantity;//updating stock
-      currentitem.save();
+      await currentitem.save();
       var position = 220 + (30 * (i + 1)); 
-      generateTableRow(
+      await generateTableRow(
         doc,
         position,
         currentitem.productName,
         currentitem.productCategory,
-        currentitem.productPrice,
+        currentitem.productDCPrice,
         (invoice.items[i].Quantity).toString(),
-        (currentitem.productPrice * invoice.items[i].Quantity).toString()
+        (currentitem.productDCPrice * invoice.items[i].Quantity).toString()
       );
+      done = position
+      console.log(done)
     }
-    generateHr(doc, position + 30);
+    console.log(done)
+    generateHr(doc, done + 30);
     generateTableRow(
         doc,
-        position +50,
+        done +50,
         "",
         "",
         "Total: ",

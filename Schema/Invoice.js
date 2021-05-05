@@ -7,10 +7,11 @@ var invoiceSchema = new mongoose.Schema({
     city: {type: String},
     country: {type: String},
     postal_code:  {type: String},
-    items: [{_id: false, Product: {type: mongoose.Schema.Types.ObjectId, ref: 'Products'}, Quantity: {type: Number}}],
+    items: [{_id: false, Product: {type: mongoose.Schema.Types.ObjectId, ref: 'Products'}, Quantity: {type: Number}, PriceatPurchase: {type: Number}}],
     total: {type: String},
     date: {type: Date},
-    userEmail : {type: String}
+    userEmail : {type: String},
+    status: {type: String, default: 'processing', enum: ['processing','in-transit','delivered']},
 });
 
 var Invoice = mongoose.model('Invoice', invoiceSchema);

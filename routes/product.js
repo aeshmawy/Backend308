@@ -125,6 +125,7 @@ const upload = multer(
      newProduct.productFlutterLink = `http://10.0.2.2:5000/product/image/${newProduct._id}`  
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
+     newProduct.productDCPrice = newProduct.productPrice - (newProduct.productPrice * (newProduct.productDiscount/100))
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
@@ -638,37 +639,16 @@ router.get('/bgcolor/:id' , async (req,res) =>{
 
  router.put('/imageLink' , async (req,res) =>{
 
-    if(req.params.id)
+    products = await Product.find({})
+    
+    for(var i =0; i < products.length; i++ )
     {
-        if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
-        {
-            await Product.findByIdAndUpdate(req.params.id, {productImageLink: `http://localhost:5000/product/image/${req.params.id}`}
-            
-            ,(err, wantedProduct) => 
-            {
-                if(err){return null}
-                else{return wantedProduct}
-            });
-            
-            await Product.find({}, async function (err, products) {    
-                for (var i=0; i<products.length; i++) {       
-                    Product.findOne({ _id: products[i]._id }, function (err, doc){
-                        doc.productFlutterLink = `http://10.0.2.2:5000/product/image/${doc._id}`;
-                        doc.save();
-                    });    
-                    
-                 }  
-            });
-            res.status(200).send("ImageLink has been updated")
-        }
-        else
-        {res.status(400).send("Please insert a correct id.")}
-        
+        products[i].productDCPrice = products[i].productPrice - (products[i].productPrice * (products[i].productDiscount/100))
+        products[i].productDCPrice = (Math.round(products[i].productDCPrice * 100) / 100).toFixed(2);
+        console.log( products[i].productDCPrice)
+        products[i].save()
     }
-    else
-    {
-        res.status(400).send("Please insert an id.")
-    }
+    res.status(200).send("done")
 }
 )
 module.exports = router;
