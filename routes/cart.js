@@ -125,12 +125,13 @@ router.post('/add/:productid/:quantity', async (req, res) =>{
                         }
                         else
                         {
-                            req.session.userCart[isUnique].Quantity = parseInt(req.session.userCart[isUnique].Quantity,10) + parseInt(req.params.quantity, 10);;
+                            
                             if(req.session.userCart[isUnique].Quantity > wantedProduct.productStock)
                             {
                                 res.status(400).send("Cant add anymore of the element to the cart.")
                             }
                             else{
+                                req.session.userCart[isUnique].Quantity = parseInt(req.session.userCart[isUnique].Quantity,10) + parseInt(req.params.quantity, 10);
                                 res.status(200).send("Logged Out : Same Element added")
                             }
                         }
