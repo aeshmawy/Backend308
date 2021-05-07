@@ -187,14 +187,15 @@ async function generateInvoiceTable(doc, invoice) {
         currentitem.productName,
         currentitem.productCategory,
         currentitem.productDCPrice,
-        (invoice.items[i].Quantity).toString(),
-        (currentitem.productDCPrice * invoice.items[i].Quantity).toString()
+        parseFloat(invoice.items[i].Quantity).toFixed(2),
+        parseFloat(currentitem.productDCPrice * invoice.items[i].Quantity).toFixed(2)
       );
       done = position
       console.log(done)
     }
     console.log(done)
     generateHr(doc, done + 30);
+    console.log(invoice.total)
     generateTableRow(
         doc,
         done +50,
@@ -202,7 +203,7 @@ async function generateInvoiceTable(doc, invoice) {
         "",
         "Total: ",
         "",
-        (invoice.total).toString()
+        parseFloat(invoice.total).toFixed(2)
       );
   }
 
