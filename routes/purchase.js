@@ -27,6 +27,7 @@ router.get('/totalprice', async (req,res) =>
         totalDCprice += (founduser.userCart[i].Product.productDCPrice * founduser.userCart[i].Quantity )
     }
     req.session.totalprice = totalDCprice;
+    req.session.totalDCprice = totalDCprice
     res.status(200).json({totalprice: parseFloat(totalprice).toFixed(2),totalDCprice: parseFloat(totalDCprice).toFixed(2)});
     }   
     else if(req.session.userCart)
@@ -39,6 +40,7 @@ router.get('/totalprice', async (req,res) =>
             totalDCprice += (req.session.userCart[i].Product.productDCPrice * req.session.userCart[i].Quantity )
         }
         req.session.totalprice = totalDCprice;
+        req.session.totalDCprice = totalDCprice;
         res.status(200).json({totalprice: parseFloat(totalprice).toFixed(2),totalDCprice: parseFloat(totalDCprice).toFixed(2)});
     }
     else
@@ -112,7 +114,7 @@ router.post('/step1', async (req,res) =>
             SaddressCity: req.body.SaddressCity,
             SaddressStreet: req.body.SaddressStreet,
             zipCode : req.body.zipCode,
-            totalprice: req.session.totalprice
+            totalprice: req.session.totalDCprice,
         });
         req.session.details = details;
         res.status(200).send("details saved");
@@ -206,8 +208,9 @@ router.get('/sendinvoice' , async (req,res) =>
     });
     var something = await User.findById(req.session.user._id).select("userCart -_id")
 
-   console.log("here1: " + something.userCart)
-    Email.autoInvoice(req.session.details, something.userCart, req.session.user.email);
+    console.log("here1: " + something.userCart)
+    if(something.userCart !== [])
+    {Email.autoInvoice(req.session.details, something.userCart, req.session.user.email);
     founduser = await User.findById(req.session.user._id)
     for(var i = 0; i < founduser.userCart.length; i++)
     {
@@ -216,7 +219,10 @@ router.get('/sendinvoice' , async (req,res) =>
     }
     founduser.userCart = [];
     await founduser.save();
-    res.status(200).send(details);
+    res.status(200).send(details);}
+    else{
+        res.status(400).send("Cart is empty");
+    }
 })
 
 
