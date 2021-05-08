@@ -46,7 +46,7 @@ router.post('/:id', async (req, res) =>
     console.log(req.session.user.isAuthen)
     if(req.session.loggedIn === true)
     {
-        if(req.session.user.isAuthen || true)//always true for testing. make
+        if(req.session.user.isAuthen)//always true for testing. make
         {
             if(req.body.rating && req.body.content && req.body.approved !== undefined)
             {
@@ -78,7 +78,7 @@ router.post('/:id', async (req, res) =>
                         break;
                     }
                 }
-                if((unique && purchased) || true)//TODO: remove true
+                if((unique && purchased))//TODO: remove true
                 {
                     comment.save();
                     var onProduct = await Product.findByIdAndUpdate(req.params.id, {$push: {"productComments": comment}},
