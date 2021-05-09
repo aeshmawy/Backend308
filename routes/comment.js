@@ -84,7 +84,7 @@ router.post('/:id', async (req, res) =>
                     var onProduct = await Product.findByIdAndUpdate(req.params.id, {$push: {"productComments": comment}},
                     {safe: true, new : true});
                     
-                    res.status(200).send("OK")
+                    res.status(200).send(comment)
                 }
                 else if(!purchased)
                 {
