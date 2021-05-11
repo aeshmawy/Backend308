@@ -274,6 +274,59 @@ router.get('/', async (req,res) =>{
     }
 })
 
+/**
+ * @swagger
+ * /purchase/{id}:
+ *  get:
+ *    description: get all purchases of the logged in user
+ *    tags:
+ *      - order  
+ *    parameters:
+ *      - in : path
+ *        name : id
+ *        type: string
+ *        required : true  
+ *    responses:
+ *      '200':
+ *        description: Successful Registration(User has been added to the database)
+ *      '400':
+ *        description: Username or password is wrong
+ *      '500':
+ *        description: Something has gone terribly wrong.
+ */
+router.get('/:id', async (req,res) =>{
+
+    if(req.session.loggedIn === true)
+    {
+        invoices = await Invoice.findById(req.params.id).populate("items.Product");
+    
+        var easyArr = []
+        var products = []
+        var element = new Object();
+        for(var i = 0; i < 1; i++)
+        {
+            var products = []
+            element = invoices.toObject()
+            for(var j = 0; j < invoices.items.length; j++)
+            {
+                if(element.items[j].Product === undefined){break;}
+                element.items[j].Product.quantity =  invoices.items[j].Quantity
+                element.items[j].Product.PriceatPurchase =  invoices.items[j].PriceatPurchase
+                products.push(element.items[j].Product)
+            }
+            element.items = []
+            element.products = products 
+            
+            easyArr.push(element)
+        }
+        res.status(200).send(easyArr)
+    }
+    else
+    {
+        res.status(400).send("User is not logged in ")
+    }
+})
+
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
