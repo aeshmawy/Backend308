@@ -72,7 +72,7 @@ router.post('/:id', async (req, res) =>
                 for(var i = 0 ; i < req.session.user.purchasedProducts.length ; i++)
                 {
                     
-                    if(onProduct._id === req.session.user.purchasedProducts[i])
+                    if(onProduct._id.toString() === req.session.user.purchasedProducts[i].toString())
                     {
                         purchased = true;
                         break;
