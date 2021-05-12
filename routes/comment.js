@@ -96,7 +96,7 @@ router.post('/:id', async (req, res) =>
                 }
                 else
                 {
-                    res.status(400).send("This user has already commented on this product")
+                    res.status(400).send("Some error has occured")
                 }
             }
         }
