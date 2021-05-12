@@ -29,7 +29,7 @@ var Comment = require('../Schema/Comment');
  *              type: string
  *              default : "This is a comment!"
  *            rating:
- *              type: Number
+ *              type: string
  *              default: 1
  *              min: 1
  *              max: 5
@@ -51,13 +51,13 @@ router.post('/:id', async (req, res) =>
         if(req.session.user.isAuthen)//always true for testing. make
         {
             console.log("here2");
-            if(req.body.rating && req.body.content && req.body.approved !== undefined)
+            if(req.body.rating && req.body.content)
             {
                 console.log("here3");
                 console.log(req.body);
                 var comment = new Comment({
                     content: req.body.content,
-                    rating: req.body.rating,
+                    rating: parseFloat(req.body.rating),
                     approved: false,
                     user: req.session.user.email
                 })
@@ -105,6 +105,10 @@ router.post('/:id', async (req, res) =>
                 {
                     res.status(400).send("Some error has occured")
                 }
+            }
+            else
+            {
+                res.status(400).send("Something wrong with the body")
             }
         }
         else
