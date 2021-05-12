@@ -56,6 +56,8 @@ router.post('/:id', async (req, res) =>
                     approved: false,
                     user: req.session.user.email
                 })
+
+                console.log(comment);
                 var onProduct = await Product.findById(req.params.id, {productImage: 0}).populate("productComments");
                 var purchased = false;
                 
