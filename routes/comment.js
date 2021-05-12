@@ -43,7 +43,7 @@ var Comment = require('../Schema/Comment');
 router.post('/:id', async (req, res) =>
 {//TODO: validate token and check if usertype is 1
     //get product
-    
+    console.log(req.session.user)
     if(req.session.loggedIn === true)
     {
         if(req.session.user.isAuthen)//always true for testing. make
