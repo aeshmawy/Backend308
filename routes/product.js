@@ -494,7 +494,22 @@ router.get('/filter' , async (req,res) =>{
     
     return res.status(200).send(ProductsSearched)
 })
-
+/**
+ * @swagger
+ * /product/top7:
+ *   get:
+ *    description: Returns highest rated 7 products
+ *    tags: 
+ *    - productFilter
+ *    responses:
+ *      200:
+ *        description: Successful get
+ */
+router.get('/top7', async(req,res)=>
+{
+    var ProductsSearched = await Product.find({},{productImage: 0}).sort({ productRating: -1}).limit(7);
+    res.status(200).send(ProductsSearched); 
+})
 /**
  * @swagger
  * /product/bestsellers:

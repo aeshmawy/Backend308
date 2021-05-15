@@ -296,6 +296,7 @@ router.get('/', async (req,res) =>{
  */
 router.get('/:id', async (req,res) =>{
 
+    print(req.session.loggedIn  )
     if(req.session.loggedIn === true)
     {
         invoices = await Invoice.findById(req.params.id).populate("items.Product");
