@@ -92,6 +92,9 @@ async function autoInvoice(details, userCart, email) {
                 path: `invoices/invoice${invoice._id}.pdf`
             }]
         });
+        console.log(invoice._id)
+    return invoice._id;
+    
 }
 
 async function createInvoice(invoice) {
@@ -139,7 +142,7 @@ doc
     .fontSize(10)
     .text(`Invoice Number: ${invoice._id}`, 50, 155)
     .text(`Invoice Date: ${invoice.date.toISOString().slice(0,10)}`, 50, 170)
-    .text(`Balance Due: ${invoice.total}`, 50, 185)
+    .text(`Balance Due: ${parseFloat(invoice.total).toFixed(2)}`, 50, 185)
 
     .text(invoice.address, 350, 170)
     .text(invoice.name, 350, 155)

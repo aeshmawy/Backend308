@@ -210,7 +210,7 @@ router.get('/sendinvoice' , async (req,res) =>
 
     console.log("here1: " + something.userCart)
     if(something.userCart !== [])
-    {Email.autoInvoice(req.session.details, something.userCart, req.session.user.email);
+    {var invoiceid = await Email.autoInvoice(req.session.details, something.userCart, req.session.user.email);
     founduser = await User.findById(req.session.user._id)
     for(var i = 0; i < founduser.userCart.length; i++)
     {
@@ -219,6 +219,7 @@ router.get('/sendinvoice' , async (req,res) =>
     }
     founduser.userCart = [];
     await founduser.save();
+    details.invoiceid = invoiceid;
     res.status(200).send(details);}
     else{
         res.status(400).send("Cart is empty");
