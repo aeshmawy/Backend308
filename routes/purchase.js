@@ -290,10 +290,7 @@ router.get('/', async (req,res) =>{
  *    responses:
  *      '200':
  *        description: Successful Registration(User has been added to the database)
- *      '400':
- *        description: Username or password is wrong
- *      '500':
- *        description: Something has gone terribly wrong.
+ *      
  */
 router.get('/:id', async (req,res) =>{
 
@@ -326,6 +323,51 @@ router.get('/:id', async (req,res) =>{
     else
     {
         res.status(400).send("User is not logged in ")
+    }
+})
+/**
+ * @swagger
+ * /purchase/{id}:
+ *  delete:
+ *    description: get all purchases of the logged in user
+ *    tags:
+ *      - order  
+ *    parameters:
+ *      - in : path
+ *        name : id
+ *        type: string
+ *        required : true  
+ *    responses:
+ *      '200':
+ *        description: Successful Order deletion
+ *      
+ */
+router.delete('/:id', async (req,res) =>{
+
+    if(req.session.loggedIn === true)
+    {
+        invoice = await Invoice.findById(req.params.id);
+        console.log(invoice);
+        if(invoice)
+        {
+            if(req.session.user.email === invoice.userEmail)
+            {
+                invoice.deleteOne();
+                res.status(200).send('delete successful');
+            }
+            else
+            {
+                res.status(400).send('Cant delete order of another user')
+            }
+        }
+        else
+        {
+            res.status(400).send(`invoice of id: ${req.params.id}  does not exist`)
+        }
+    }
+    else
+    {
+        res.status(400).send("User is not logged in")
     }
 })
 
