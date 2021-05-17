@@ -11,7 +11,7 @@ var invoiceSchema = new mongoose.Schema({
     total: {type: String},
     date: {type: Date},
     userEmail : {type: String},
-    status: {type: String, default: 'processing', enum: ['processing','in-transit','delivered']},
+    status: {type: String, default: 'processing', enum: ['processing','in-transit','delivered', 'cancelled']},
 });
 
 var Invoice = mongoose.model('Invoice', invoiceSchema);

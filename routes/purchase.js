@@ -352,7 +352,8 @@ router.delete('/:id', async (req,res) =>{
         {
             if(req.session.user.email === invoice.userEmail)
             {
-                invoice.deleteOne();
+                invoice.status = "cancelled";
+                invoice.save();
                 res.status(200).send('delete successful');
             }
             else
