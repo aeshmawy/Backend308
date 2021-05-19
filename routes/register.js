@@ -64,8 +64,7 @@ router.post('/' , async (req,res) =>
   
   
   
-  if(req.body.userType)//TODO: restrict this
-  {newuser.userType = req.body.userType;}
+  newuser.userType = 1;//only customers can sign up using this api
 
   if(req.body.password)
   {

@@ -7,6 +7,7 @@ var logger = require('morgan');
 var swaggerJsDoc = require('swagger-jsdoc');
 var swaggerUi = require('swagger-ui-express');
 var cors = require('cors');
+var MongoDBStore = require('connect-mongodb-session')(session);
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -18,17 +19,21 @@ var authRouter = require('./routes/authenticate');
 var cartRouter = require('./routes/cart');
 var logoutRouter = require('./routes/logout');
 var purchaseRouter = require('./routes/purchase');
+var adminRouter = require('./routes/admin');
 
 var app = express();
 
 app.set("trust proxy", 1)
-
+var store = new MongoDBStore({
+  uri: 'mongodb+srv://aeshmawy:normalpass123@cs308db.kxh8v.mongodb.net/CS308',
+  collection: 'mySessions'
+});
 app.use(session({
   secret: "cool",
   cookie: {maxAge: 3600000,saveUninitialized: false,httpOnly: false,secure:false,path: '/' },
   sameSite: 'none',
   proxy : true,
-  
+  store : store,
 }));
 app.options('*', 
 cors(
@@ -102,6 +107,7 @@ app.use('/authenticate', authRouter);
 app.use('/cart', cartRouter);
 app.use('/logout', logoutRouter);
 app.use('/purchase', purchaseRouter);
+app.use('/admin', adminRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "start": "node --no-deprecation ./bin/www",
-    "test" : "mocha --no-deprecation test/test.js"
+    "test": "mocha --no-deprecation test/test.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "chai": "^4.3.4",
     "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^2.4.1",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
