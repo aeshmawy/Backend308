@@ -10,13 +10,20 @@ var database = require("../Schema/dbconnect.js");
 /* GET home page. */
 router.use(async (req,res,next) =>{
     
-    if(req.session.user.userType === 4)
+    if(req.session.loggedIn)
     {
-        next()
+        if(req.session.user.userType === 4)
+        {
+            next()
+        }
+        else
+        {
+            return res.status(403).send("User does not have sufficient permission. Please log in as admin")
+        }
     }
     else
     {
-        return res.status(403).send("User does not have sufficient permission. Please log in as admin.")
+        return res.status(403).send("User is not logged in")
     }
 })
 /**
@@ -25,7 +32,7 @@ router.use(async (req,res,next) =>{
  *  post:
  *    description: username and password are required. usertype is not. (default for isSM and isPM is false)
  *    tags:
- *      - log
+ *      - admin
  *    parameters:
  *     - in: body
  *       name: email

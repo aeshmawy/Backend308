@@ -20,7 +20,7 @@ var cartRouter = require('./routes/cart');
 var logoutRouter = require('./routes/logout');
 var purchaseRouter = require('./routes/purchase');
 var adminRouter = require('./routes/admin');
-
+var pmRouter = require('./routes/pm');
 var app = express();
 
 app.set("trust proxy", 1)
@@ -108,6 +108,7 @@ app.use('/cart', cartRouter);
 app.use('/logout', logoutRouter);
 app.use('/purchase', purchaseRouter);
 app.use('/admin', adminRouter);
+app.use('/pm', pmRouter);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

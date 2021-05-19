@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var Email = require('../email');
-const Invoice = require('../Schema/Invoice');
+var Invoice = require('../Schema/Invoice');
+var Product = require('../Schema/Products');
+var Refunds = require('../Schema/Refunds')
 var User = require('../Schema/User')
 /**
  * @swagger
@@ -371,9 +373,124 @@ router.delete('/:id', async (req,res) =>{
         res.status(400).send("User is not logged in")
     }
 })
+/**
+ * @swagger
+ * /purchase/{invoiceid}/{productid}/{quantity}:
+ *  delete:
+ *    description: get all purchases of the logged in user
+ *    tags:
+ *      - order  
+ *    parameters:
+ *      - in : path
+ *        name : invoiceid
+ *        type: string
+ *        required : true  
+ *      - in : path
+ *        name : productid
+ *        type: string
+ *        required : true  
+ *      - in : path
+ *        name : quantity
+ *        type: string
+ *        required : true 
+ *    responses:
+ *      '200':
+ *        description: Successful Refund Request
+ *      
+ */
+router.delete('/:invoiceid/:productid/:quantity', async (req,res) =>{
 
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+    
+    if(req.session.loggedIn === true)
+    {
+        invoice = await Invoice.findById(req.params.invoiceid);
+        console.log(invoice);
+        if(invoice)
+        {
+            if(req.session.user.email === invoice.userEmail)
+            {
+                for(var i = 0; i < invoice.items.length; i++)
+                {
+                    if(invoice.items[i].Product.toString() === req.params.productid)
+                    {
+                        if(invoice.items[i].Quantity === parseInt(req.params.quantity))
+                        {
+                            refund = new Refunds({
+                                email: req.session.user.email,
+                                invoiceID: req.params.invoiceid,
+                                productID: req.params.productid,
+                                quantity: parseInt(req.params.quantity),
+                                approved: false,
+                                PriceatPurchase: invoice.items[i].PriceatPurchase
+                            })
+                            if(i === invoice.items.length)
+                            {invoice.items.pop();}
+                            else
+                            {invoice.items.splice(i, 1);}
+                            invoice.save();
+                            refund.save();
+                            return res.status(200).send('Refund has been requested');
+                        }
+                        else if (invoice.items[i].Quantity > parseInt(req.params.quantity))
+                        {
+                            refund = new Refunds({
+                                email: req.session.user.email,
+                                invoiceID: req.params.invoiceid,
+                                productID: req.params.productid,
+                                quantity: parseInt(req.params.quantity),
+                                approved: false,
+                                PriceatPurchase: invoice.items[i].PriceatPurchase
+                            })
+                            invoice.items[i].Quantity = invoice.items[i].Quantity - parseInt(req.params.quantity)
+                            invoice.save();
+                            refund.save();
+                            return res.status(200).send('Refund has been requested');
+                        }
+                        else
+                        {
+                            return res.status(400).send('Cant refund that many products');
+                        }
+                       
+                    }
+                }
+                res.status(400).send('Product does not exist in invoice');
+            }
+            else
+            {
+                res.status(400).send('Cant delete order of another user')
+            }
+        }
+        else
+        {
+            res.status(400).send(`invoice of id: ${req.params.id}  does not exist`)
+        }
+    }
+    else
+    {
+        res.status(400).send("User is not logged in")
+    }
+})
+/**
+ * @swagger
+ * /purchase/refunds/{invoiceid}:
+ *  get:
+ *    description: get all refunds of given invoice
+ *    tags:
+ *      - order  
+ *    parameters:
+ *       - in : path
+ *         name : invoiceid
+ *         type: string
+ *         required : true  
+ *    responses:
+ *      '200':
+ *        description: Successful refund get
+ */
+router.get("/refunds/:invoiceid", async (req,res) =>{
+    refunds = await Refunds.find({invoiceID : req.params.invoiceid}).populate("productID");
+    return res.status(200).send(refunds);
+})
+
+
 
 module.exports = router;
