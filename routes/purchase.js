@@ -264,6 +264,16 @@ router.get('/', async (req,res) =>{
                 element.items[j].Product.PriceatPurchase =  invoices[i].items[j].PriceatPurchase
                 products.push(element.items[j].Product)
             }
+            if(invoices[i].items.length === 0)
+            {
+                refunds = await Refunds.find({invoiceID : invoices[i]._id}).populate("productID");
+                var element1 = refunds[0].toObject();
+                element1.productID.quantity = refunds[0].quantity
+                element1.productID.PriceatPurchase = refunds[0].PriceatPurchase
+                console.log(refunds[0].quantity)
+                //console.log(element.productID)
+                products.push(element1.productID)
+            }
             element.items = []
             element.products = products 
             
