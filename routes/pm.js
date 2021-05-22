@@ -220,7 +220,7 @@ router.post('/addproduct', async (req, res) =>{
 router.delete('/deleteproduct/:id', async (req, res) =>{
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) 
     {
-        Product.findByIdAndDelete(req.params.id, (err,found) =>{
+        Product.findByIdAndUpdate(req.params.id,{"isDeleted": true} ,(err,found) =>{
         if(err)
         {return res.status(400).send("There was some issue");}
         else{

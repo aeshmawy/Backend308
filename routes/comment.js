@@ -43,7 +43,7 @@ var Comment = require('../Schema/Comment');
 router.post('/:id', async (req, res) =>
 {//TODO: validate token and check if usertype is 1
     //get product
-   
+    
     if(req.session.loggedIn === true)
     {
       
@@ -143,7 +143,46 @@ router.get('/:id', async (req, res) =>
 
 
     var onProduct = await Product.findById(req.params.id , {productImage: 0}).populate('productComments')
-    res.status(200).send(onProduct.productComments)
+    var Approved = [];
+    console.log(req.session.loggedIn )
+    if(req.session.loggedIn)
+    {
+        if(onProduct.productComments !== undefined)
+        {
+            console.log("here1")
+            if(req.session.user.userType === 4 || req.session.user.userType === 3)
+            {
+                console.log("here2")
+                for(var i = 0; i < onProduct.productComments.length; i++)
+                {
+                    Approved.push(onProduct.productComments[i]);
+                }
+                res.status(200).send(Approved)
+            }
+            else
+            {
+                console.log("here3")
+                for(var i = 0; i < onProduct.productComments.length; i++)
+                {
+                    if(onProduct.productComments[i].approved === true)
+                    {
+                        Approved.push(onProduct.productComments[i]);
+                    }
+                }
+                res.status(200).send(Approved)
+            }
+        }
+        else{
+            console.log("here4")
+            res.status(200).send(Approved)
+        }
+    }
+    else
+    {
+        console.log("here5")
+        res.status(200).send(Approved)
+    }
+    
     
     
 });

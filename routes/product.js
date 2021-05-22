@@ -126,6 +126,7 @@ const upload = multer(
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
      newProduct.productDCPrice = newProduct.productPrice - (newProduct.productPrice * (newProduct.productDiscount/100))
+     newProduct._id = "606b1a80275f386260dc79c1"
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
@@ -204,7 +205,7 @@ async (req, res) =>
 
  router.get('/all', async (req,res) => {
     
-    var SearchedProducts = await Product.find( {} , {productImage: 0})//exclude image buffer
+    var SearchedProducts = await Product.find( {"isDeleted" : false} , {productImage: 0})//exclude image buffer
     
     res.status(200).send(SearchedProducts);
 
@@ -473,20 +474,20 @@ router.get('/filter' , async (req,res) =>{
 
     try{
     if(req.query.order === "ratings")
-    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands},"isDeleted" : false},{productImage: 0})
     .find({$text: {$search: searchString}} , {productImage: 0}).sort({productRating: -1 , productNumofRatings: -1})}
     else if(req.query.order === "popular")
-    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands},"isDeleted" : false},{productImage: 0})
     .find({$text: {$search: searchString}} , {productImage: 0}).sort({productNumofRatings: -1 , productRating: -1}) }
     else if (req.query.order === "ascending")
-    {var ProductsSearched = await Product.find({productCategory: {$in: categories} , productDistributor : {$in: brands}} ,{productImage: 0})
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories} , productDistributor : {$in: brands},"isDeleted" : false} ,{productImage: 0})
     .find({$text: {$search: searchString}} , {productImage: 0}).sort({productPrice: 1})}
     else if (req.query.order === "descending")
-    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+    {var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands},"isDeleted" : false},{productImage: 0})
     .find({$text: {$search: searchString}} , {productImage: 0}).sort({productPrice: -1})}
     else
     {
-        var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands}},{productImage: 0})
+        var ProductsSearched = await Product.find({productCategory: {$in: categories}, productDistributor : {$in: brands},"isDeleted" : false},{productImage: 0})
         .find({$text: {$search: searchString}} , {productImage: 0});
     }
     }
@@ -507,7 +508,7 @@ router.get('/filter' , async (req,res) =>{
  */
 router.get('/top7', async(req,res)=>
 {
-    var ProductsSearched = await Product.find({},{productImage: 0}).sort({ productRating: -1}).limit(7);
+    var ProductsSearched = await Product.find({"isDeleted" : false},{productImage: 0}).sort({ productRating: -1}).limit(7);
     res.status(200).send(ProductsSearched); 
 })
 /**
@@ -524,7 +525,7 @@ router.get('/top7', async(req,res)=>
 
  router.get('/bestsellers', async(req,res) =>
  {
-     var ProductsSearched = await Product.find({productBestseller: true},{productImage: 0});
+     var ProductsSearched = await Product.find({productBestseller: true,"isDeleted" : false},{productImage: 0});
      res.status(200).send(ProductsSearched);
  });
  
@@ -541,7 +542,7 @@ router.get('/top7', async(req,res)=>
   */
  router.get('/discounts', async(req,res) =>
  {
-     var ProductsSearched = await Product.find({ "productDiscount"  : {$gt : 0}} , {productImage: 0}).sort({productDiscount: -1});
+     var ProductsSearched = await Product.find({ "productDiscount"  : {$gt : 0},"isDeleted" : false} , {productImage: 0}).sort({productDiscount: -1});
      res.status(200).send(ProductsSearched);
  })
 

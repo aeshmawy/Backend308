@@ -24,7 +24,8 @@ var productSchema = new mongoose.Schema({
     productComments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }],
     productImageLink: {type: String},
     onlineImageLink: {type: String},
-    productFlutterLink: {type: String, default : " "}
+    productFlutterLink: {type: String, default : " "},
+    isDeleted: {type:Boolean, default: false}
 
 });
 //asdf
