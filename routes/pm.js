@@ -3,7 +3,10 @@ var router = express.Router();
 
 const multer = require('multer')
 var fs = require('fs');
-const Product = require('../Schema/Products');
+var Comment = require('../Schema/Comment');
+var Invoice = require('../Schema/Invoice');
+var Product = require('../Schema/Products');
+var Refunds = require('../Schema/Refunds');
 var validator = require('validator');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
@@ -269,8 +272,155 @@ router.put('/productstock/:id/:quantity', async (req, res) =>{
     }
 });
 
+/**
+ * @swagger
+ * /pm/approvecomment/{commentid}:
+ *   put:
+ *     description: approva a comment
+ *     tags:
+ *      - PM
+ *     parameters:
+ *      - in : path
+ *        name : commentid
+ *        type: string
+ *        required : true 
+ *     responses:
+ *        '200':
+ *          description: Successful comment approval
+ *       
+ */
+router.put('/approvecomment/:commentid', async (req, res) =>{
+    if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+        await Comment.findByIdAndUpdate(req.params.commentid, {approved: true})
+        res.status(200).send("Comment has been approved")
+    }
+    else
+    {
+        return res.status(400).send("comment id is not valid");
+    }
+});
+
+/**
+ * @swagger
+ * /pm/denycomment/{commentid}:
+ *   put:
+ *     description: deny a comment
+ *     tags:
+ *      - PM
+ *     parameters:
+ *      - in : path
+ *        name : commentid
+ *        type: string
+ *        required : true 
+ *     responses:
+ *        '200':
+ *          description: Successful comment approval
+ *       
+ */
+ router.put('/denycomment/:commentid', async (req, res) =>{
+    if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+        await Comment.findByIdAndDelete(req.params.commentid)
+        res.status(200).send("Comment has been deleted")
+    }
+    else
+    {
+        return res.status(400).send("comment id is not valid");
+    }
+});
 
 
+/**
+ * @swagger
+ * /pm/allinvoices:
+ *   get:
+ *    description: get all invoices
+ *    tags: 
+ *    - PM
+ *    responses:
+ *      200:
+ *        description: A successful search
+ */
+router.get('/allinvoices', async (req, res) =>{
 
+    invoices = await Invoice.find({}).populate("items.Product").sort({"date": -1});
+    var easyArr = []
+    var products = []
+    var element = new Object();
+    for(var i = 0; i < invoices.length; i++)
+    {
+        var products = []
+        element = invoices[i].toObject()
+        for(var j = 0; j < invoices[i].items.length; j++)
+        {
+            if(element.items[j].Product === undefined){break;}
+            element.items[j].Product.quantity =  invoices[i].items[j].Quantity
+            element.items[j].Product.PriceatPurchase =  invoices[i].items[j].PriceatPurchase
+            products.push(element.items[j].Product)
+        }
+        if(invoices[i].items.length === 0)
+        {
+            refunds = await Refunds.find({invoiceID : invoices[i]._id}).populate("productID");
+            if(refunds !== []){
+            var element1 = refunds[0].toObject();
+            element1.productID.quantity = refunds[0].quantity
+            element1.productID.PriceatPurchase = refunds[0].PriceatPurchase
+            console.log(refunds[0].quantity)
+            //console.log(element.productID)
+            products.push(element1.productID)
+            }
+        }
+        element.items = []
+        element.products = products 
+        
+        easyArr.push(element)
+    }
+    res.status(200).send(easyArr)
 
+});
+
+/**
+ * @swagger
+ * /pm/invoices/{invoiceid}:
+ *  get:
+ *    description: get one purchase of the logged in user
+ *    tags:
+ *      - PM  
+ *    parameters:
+ *      - in : path
+ *        name : invoiceid
+ *        type: string
+ *        required : true  
+ *    responses:
+ *      '200':
+ *        description: get one invoice details for pm
+ *      
+ */
+ router.get('/invoices/:invoiceid', async (req, res) =>{
+
+    invoices = await Invoice.findById(req.params.invoiceid).populate("items.Product");
+    
+    var easyArr = []
+    var products = []
+    var element = new Object();
+    for(var i = 0; i < 1; i++)
+    {
+        var products = []
+        element = invoices.toObject()
+        for(var j = 0; j < invoices.items.length; j++)
+        {
+            if(element.items[j].Product === undefined){break;}
+            element.items[j].Product.quantity =  invoices.items[j].Quantity
+            element.items[j].Product.PriceatPurchase =  invoices.items[j].PriceatPurchase
+            products.push(element.items[j].Product)
+        }
+        element.items = []
+        element.products = products 
+        
+        easyArr.push(element)
+    }
+    res.status(200).send(easyArr)
+
+});
 module.exports = router;

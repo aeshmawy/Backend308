@@ -292,7 +292,7 @@ router.get('/', async (req,res) =>{
  * @swagger
  * /purchase/{id}:
  *  get:
- *    description: get all purchases of the logged in user
+ *    description: get one purchase of the logged in user
  *    tags:
  *      - order  
  *    parameters:
