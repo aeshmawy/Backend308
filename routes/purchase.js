@@ -311,7 +311,7 @@ router.get('/:id', async (req,res) =>{
     if(req.session.loggedIn === true)
     {
         invoices = await Invoice.findById(req.params.id).populate("items.Product");
-    
+        
         var easyArr = []
         var products = []
         var element = new Object();
@@ -322,6 +322,12 @@ router.get('/:id', async (req,res) =>{
             for(var j = 0; j < invoices.items.length; j++)
             {
                 if(element.items[j].Product === undefined){break;}
+                element.items[j].Product.refundquantity = 0;
+                var refunds = await Refunds.find({invoiceID: req.params.id, productID: invoices.items[j].Product._id});
+                for(var k = 0; k < refunds.length; k++)
+                {
+                    element.items[j].Product.refundquantity += refunds[k].quantity
+                }
                 element.items[j].Product.quantity =  invoices.items[j].Quantity
                 element.items[j].Product.PriceatPurchase =  invoices.items[j].PriceatPurchase
                 products.push(element.items[j].Product)
@@ -363,15 +369,22 @@ router.delete('/:id', async (req,res) =>{
         console.log(invoice);
         if(invoice)
         {
-            if(req.session.user.email === invoice.userEmail)
+            if(invoice.status === "processing")
             {
-                invoice.status = "cancelled";
-                invoice.save();
-                res.status(200).send('delete successful');
+                if(req.session.user.email === invoice.userEmail)
+                {
+                    invoice.status = "cancelled";
+                    invoice.save();
+                    res.status(200).send('delete successful');
+                }
+                else
+                {
+                    res.status(400).send('Cant delete order of another user')
+                }
             }
             else
             {
-                res.status(400).send('Cant delete order of another user')
+                res.status(400).send('Order cannot be cancelled')
             }
         }
         else
@@ -434,10 +447,7 @@ router.delete('/:invoiceid/:productid/:quantity', async (req,res) =>{
                                 approved: false,
                                 PriceatPurchase: invoice.items[i].PriceatPurchase
                             })
-                            if(i === invoice.items.length)
-                            {invoice.items.pop();}
-                            else
-                            {invoice.items.splice(i, 1);}
+                            invoice.items[i].Quantity = 0;
                             invoice.save();
                             refund.save();
                             return res.status(200).send('Refund has been requested');

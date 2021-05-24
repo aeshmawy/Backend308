@@ -411,6 +411,12 @@ router.get('/allinvoices', async (req, res) =>{
         for(var j = 0; j < invoices.items.length; j++)
         {
             if(element.items[j].Product === undefined){break;}
+            element.items[j].Product.refundquantity = 0;
+            var refunds = await Refunds.find({invoiceID: req.params.id, productID: invoices.items[j].Product._id});
+            for(var k = 0; k < refunds.length; k++)
+            {
+                element.items[j].Product.refundquantity += refunds[k].quantity
+            }
             element.items[j].Product.quantity =  invoices.items[j].Quantity
             element.items[j].Product.PriceatPurchase =  invoices.items[j].PriceatPurchase
             products.push(element.items[j].Product)
@@ -422,5 +428,40 @@ router.get('/allinvoices', async (req, res) =>{
     }
     res.status(200).send(easyArr)
 
+});
+
+/**
+ * @swagger
+ * /pm/invoices/{invoiceid}/{invoicestatus}:
+ *  put:
+ *    description: change status of a delivery. processing , in-transit or delivered
+ *    tags:
+ *      - PM  
+ *    parameters:
+ *      - in : path
+ *        name : invoiceid
+ *        type: string
+ *        required : true
+ *      - in : path
+ *        name : invoicestatus
+ *        type: string
+ *        required : true
+ *    responses:
+ *      '200':
+ *        description: update status of one invoice
+ *      
+ */
+ router.put('/invoices/:invoiceid/:invoicestatus', async (req, res) =>{
+
+    if(req.params.invoicestatus === "processing"
+        ||req.params.invoicestatus === "in-transit"
+        ||req.params.invoicestatus === "delivered")
+    {
+        invoices = await Invoice.findByIdAndUpdate(req.params.invoiceid, {status: req.params.invoicestatus});
+        res.status(200).send("Update successful")
+    }
+    res.status(400).send("Please enter a valid status")
+    
+    
 });
 module.exports = router;
