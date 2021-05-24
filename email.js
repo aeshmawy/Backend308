@@ -2,6 +2,7 @@ var nodemailer = require("nodemailer");
 var { google } = require("googleapis");
 var Invoice = require('./Schema/Invoice');
 var Product = require('./Schema/Products');
+var PDF = require('./Schema/PDF')
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 const OAuth2 = google.auth.OAuth2;
@@ -66,6 +67,8 @@ async function autoInvoice(details, userCart, email) {
     }
     invoice.save();
     await createInvoice(invoice);
+    
+    
     let transporter = nodemailer.createTransport({
         service: "Gmail",
         auth: {
@@ -92,6 +95,8 @@ async function autoInvoice(details, userCart, email) {
                 path: `invoices/invoice${invoice._id}.pdf`
             }]
         });
+        var PDFSave = new PDF({invoicePDF: fs.readFileSync(__dirname + `/invoices/invoice${invoice._id}.pdf`), invoiceid: invoice._id});
+        PDFSave.save();
         console.log(invoice._id)
     return invoice._id;
     
@@ -107,6 +112,7 @@ async function createInvoice(invoice) {
   
     doc.end();
     doc.pipe(fs.createWriteStream(`./invoices/invoice${invoice._id}.pdf`));
+    
 }
 
 function generateHeader(doc) {
