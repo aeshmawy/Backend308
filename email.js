@@ -95,7 +95,7 @@ async function autoInvoice(details, userCart, email) {
                 path: `invoices/invoice${invoice._id}.pdf`
             }]
         });
-        var PDFSave = new PDF({invoicePDF: fs.readFileSync(__dirname + `/invoices/invoice${invoice._id}.pdf`), invoiceid: invoice._id});
+        var PDFSave = new PDF({invoicePDF: fs.readFileSync(__dirname + `/invoices/invoice${invoice._id}.pdf`), invoiceID: invoice._id});
         PDFSave.save();
         console.log(invoice._id)
     return invoice._id;
