@@ -16,23 +16,23 @@ var noImgPath = 'logo.jpg';
 var ObjectId = require('mongoose').Types.ObjectId; 
 
 
-// router.use(async (req,res,next) =>{
-//     if(req.session.loggedIn)
-//     {
-//         if(req.session.user.userType === 4 || req.session.user.userType === 2)
-//         {
-//             next()
-//         }
-//         else
-//         {
-//             return res.status(403).send("User does not have sufficient permission. Please log in as admin or PM")
-//         }
-//     }
-//     else
-//     {
-//         return res.status(403).send("User is not logged in")
-//     }
-// })
+router.use(async (req,res,next) =>{
+    if(req.session.loggedIn)
+    {
+        if(req.session.user.userType === 4 || req.session.user.userType === 2)
+        {
+            next()
+        }
+        else
+        {
+            return res.status(403).send("User does not have sufficient permission. Please log in as admin or PM")
+        }
+    }
+    else
+    {
+        return res.status(403).send("User is not logged in")
+    }
+})
 
 /**
  * @swagger
@@ -114,7 +114,25 @@ router.post('/dates', async (req, res) =>{
     }
 
 })
-
+/**
+ * @swagger
+ * /sm/{invoiceid}/pdf:
+ *    get:
+ *       description: get pdf of an invoice
+ *       tags:
+ *       - SM
+ *       produces:
+ *       - application/pdf
+ *       parameters:
+ *       - in : path
+ *         name: invoiceid
+ *         required: true
+ *         type: string
+ *       responses:
+ *         200:
+ *           description: A successful product image get
+ *          
+ */
 router.get('/:invoiceid/pdf',async  (req, res) => 
 {
     console.log(req.params.invoiceid)
@@ -122,6 +140,8 @@ router.get('/:invoiceid/pdf',async  (req, res) =>
    
 
     res.set('Content-Type', 'application/pdf');
+    
+    res.set('content-disposition', `attachment; filename="invoice${req.params.invoiceid}"`);
     res.status(200).send(wantedpdf[0].invoicePDF);
 })
 

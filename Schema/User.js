@@ -8,7 +8,12 @@ var userSchema = new mongoose.Schema({
     userCart: [{_id: false, Product: {type: mongoose.Schema.Types.ObjectId, ref: 'Products'}, Quantity: {type: Number}}],
     isAuthen: {type: Boolean, default: false},//if email is confirmed
     purchasedProducts: [{type: mongoose.Schema.Types.ObjectId, ref: 'Products'}],
-    invoices: [{type: mongoose.Schema.Types.ObjectId, ref: 'invoices'}]
+    invoices: [{type: mongoose.Schema.Types.ObjectId, ref: 'invoices'}],
+    fullname: {type: String,},
+    taxID: {type: String,},
+    address: {type: String,},
+    city: {type: String,},
+    country: {type: String,}
     //TODO: Cart and products schema
 });
 

@@ -30,7 +30,21 @@ var User =  require("../Schema/User");
  *           userType:
  *             type: number
  *             default: 1
- *              
+ *           fullName:
+ *             type: string
+ *             default: John Doe
+ *           taxID:
+ *              type: string
+ *              default: 12345678
+ *           address: 
+ *              type: string
+ *              default: Coolio street 1337
+ *           city: 
+ *              type: string
+ *              default: istanbul
+ *           country: 
+ *              type: string
+ *              default: turkey
  *    responses:
  *      '200':
  *        description: Successful Registration(User has been added to the database)
@@ -72,7 +86,15 @@ router.post('/' , async (req,res) =>
   }
   else {return res.status(400).send("Please insert a password.");}
   
-  
+  if(req.body.fullName && req.body.taxID && req.body.address && req.body.city && req.body.country)
+  {
+    newuser.fullName = req.body.fullName;
+    newuser.taxID = req.body.taxID;
+    newuser.address = req.body.address;
+    newuser.city = req.body.city;
+    newuser.country = req.body.country;
+  }
+
    await newuser.save((err, Saveduser) => {
 
     if(err)

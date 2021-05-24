@@ -55,6 +55,29 @@ router.get('/totalprice', async (req,res) =>
 
 /**
  * @swagger
+ * /purchase/address:
+ *   get:
+ *    description: return address of loggin user
+ *    tags: 
+ *      - order
+ *    responses:
+ *      '200':
+ *        description: A successful get
+ * 
+ */
+router.get("/address", async (req,res) =>{
+    
+    if(req.session.loggedIn === true)
+    {
+        var element6 = new Object();
+        element6.city = req.session.user.city;
+        element6.country = req.session.user.country;
+        element6.address = req.session.user.address;
+    }
+    return res.status(200).send(element6);
+})
+/**
+ * @swagger
  * /purchase/step1:
  *  post:
  *    description: Take purchase details
