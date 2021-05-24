@@ -10,9 +10,10 @@ var Refunds = require('../Schema/Refunds');
 var validator = require('validator');
 var bcrypt = require('bcrypt');
 var User =  require("../Schema/User");
+var PDF =  require("../Schema/PDF");
 var database = require("../Schema/dbconnect.js");
 var noImgPath = 'logo.jpg';
-
+var ObjectId = require('mongoose').Types.ObjectId; 
 
 
 // router.use(async (req,res,next) =>{
@@ -114,10 +115,14 @@ router.post('/dates', async (req, res) =>{
 
 })
 
-router.get('/:invoiceid/pdf', (req, res) => 
+router.get('/:invoiceid/pdf',async  (req, res) => 
 {
-    
-    res.download(`./invoices/invoice${req.params.invoiceid}.pdf`)
+    console.log(req.params.invoiceid)
+    var wantedpdf = await PDF.find({invoiceID: req.params.invoiceid})
+   
+
+    res.set('Content-Type', 'application/pdf');
+    res.status(200).send(wantedpdf[0].invoicePDF);
 })
 
 module.exports = router;
