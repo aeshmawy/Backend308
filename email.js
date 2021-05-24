@@ -106,7 +106,7 @@ async function createInvoice(invoice) {
     generateFooter(doc);
   
     doc.end();
-    doc.pipe(fs.createWriteStream(`invoices/invoice${invoice._id}.pdf`));
+    doc.pipe(fs.createWriteStream(`./invoices/invoice${invoice._id}.pdf`));
 }
 
 function generateHeader(doc) {
