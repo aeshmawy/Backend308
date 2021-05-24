@@ -117,7 +117,7 @@ router.post('/dates', async (req, res) =>{
 router.get('/:invoiceid/pdf', (req, res) => 
 {
     
-    res.download(`./invoices/invoice${req.params.invoiceid}.pdf`)
+    res.download(`invoice${req.params.invoiceid}.pdf`)
 })
 
 module.exports = router;
