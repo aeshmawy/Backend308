@@ -13,7 +13,7 @@ var User =  require("../Schema/User");
 var PDF =  require("../Schema/PDF");
 var database = require("../Schema/dbconnect.js");
 var noImgPath = 'logo.jpg';
-var ObjectId = require('mongoose').Types.ObjectId; 
+var Email = require('../email');
 
 
 router.use(async (req,res,next) =>{
@@ -116,6 +116,59 @@ router.post('/dates', async (req, res) =>{
 })
 /**
  * @swagger
+ * /sm/discount/{productid}:
+ *    post:
+ *       description: get pdf of an invoice
+ *       tags:
+ *       - SM
+ *       produces:
+ *       - application/pdf
+ *       parameters:
+ *       - in : path
+ *         name: productid
+ *         required: true
+ *         type: string
+ *       - in : body 
+ *         name : discount
+ *         schema: 
+ *          type: object
+ *          properties:
+ *            discount:
+ *              type: number
+ * 
+ *       responses:
+ *         200:
+ *           description: A successful product image get
+ *          
+ */
+router.post('/discount/:productid',async  (req, res) => 
+{
+    var discountProduct = await Product.findById(req.params.productid);
+    var fullprice = discountProduct.productPrice;
+    var discountprice = fullprice - ((req.body.discount/100) * fullprice);
+    if(req.body.discount > discountProduct.productDiscount)//email all users and update the values
+    {
+        var emailusers = await User.find({})
+        for(var i = 0; i < emailusers.length; i++)
+        {
+            Email.EmailDiscount(emailusers[i].email , req.body.discount, discountProduct.productName);
+        }
+        discountProduct.productDiscount = req.body.discount;
+        discountProduct.productDCPrice = discountprice;
+        discountProduct.save();
+        res.status(200).send("Users have been emailed and discount has been updated");
+    }
+    else//just update the value
+    {
+        discountProduct.productDiscount = req.body.discount;
+        discountProduct.productDCPrice = discountprice;
+        discountProduct.save();
+        res.status(201).send("Users have been emailed");
+    }
+    
+})
+/**
+ * @swagger
  * /sm/{invoiceid}/pdf:
  *    get:
  *       description: get pdf of an invoice
@@ -144,5 +197,8 @@ router.get('/:invoiceid/pdf',async  (req, res) =>
     res.set('content-disposition', `attachment; filename="invoice${req.params.invoiceid}"`);
     res.status(200).send(wantedpdf[0].invoicePDF);
 })
+
+
+
 
 module.exports = router;

@@ -46,6 +46,34 @@ async function autoEmail(email , passcode) {
     //console.log("Message sent: %s", info.messageId);
 }
 
+async function EmailDiscount(email , discount, productName) {
+  //Email we are sending from. Do not change transporter values.
+  
+  let transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+  type: "OAuth2",
+  user: "feelsbadneed@gmail.com", 
+  clientId: "293929424947-o6b6m9pt6go7sst01b6gc5pl6o28bglr.apps.googleusercontent.com",
+  clientSecret: "jXSYqCjbxG87cML8KYGPqe2i",
+  refreshToken: "1//04xcIBmuenaVnCgYIARAAGAQSNwF-L9IrSHb0U4vo8hqpAPeHy-VXcnIis9NmGYz-Jw6yOPzmwWdM8eWvQdkvekO_VeSgvFxDsH4",
+  accessToken: accessToken
+  },
+  tls: {
+  rejectUnauthorized: false
+  }
+  });
+  
+  let info = await transporter.sendMail({
+  from: 'CS308 Team 17 <noreply@cs308.com>', // sender address
+  to: email, // list of receivers
+  subject: "Great Discount at Canvas!", // Subject line
+  
+  html: `<b>Product ${productName} just got a discount of ${discount} percent. Buy it Now!</b>`, // html body
+  });
+  //console.log("Message sent: %s", info.messageId);
+}
+
 async function autoInvoice(details, userCart, email) {
     //Email we are sending from. Do not change transporter values.
     var invoice = new Invoice();
@@ -224,4 +252,4 @@ doc
     .lineTo(550, y)
     .stroke();
 }
-module.exports = {autoEmail ,autoInvoice};
+module.exports = {autoEmail ,autoInvoice, EmailDiscount};

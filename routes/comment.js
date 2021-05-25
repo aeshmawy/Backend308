@@ -40,7 +40,7 @@ var Comment = require('../Schema/Comment');
  *      200:
  *        description: A successful search
  */
-router.post('/:id', async (req, res) =>
+router.post('/:id', async (req, res) =>//TODO test comment
 {//TODO: validate token and check if usertype is 1
     //get product
     
@@ -57,7 +57,8 @@ router.post('/:id', async (req, res) =>
                     content: req.body.content,
                     rating: parseFloat(req.body.rating),
                     approved: false,
-                    user: req.session.user.email
+                    user: req.session.user.email,
+                    productID: req.params.id
                 })
 
                 
