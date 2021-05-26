@@ -466,10 +466,23 @@ router.get('/allinvoices', async (req, res) =>{
     
 });
 
-router.put('/allunapproved', async (req, res) =>{
+/**
+ * @swagger
+ * /pm/allunapproved:
+ *  get:
+ *    description: get all unapproved comments
+ *    tags:
+ *      - PM  
+ *    responses:
+ *      '200':
+ *        description: get comments
+ *      
+ */
+router.get('/allunapproved', async (req, res) =>{
 
-    var allUnapproved = Comment.find({approved: false});
-    return allUnapproved;
+    var allUnapproved = await  Comment.find({approved: false});
+    console.log(allUnapproved);
+    res.status(200).send(allUnapproved);
     
     
 });

@@ -76,9 +76,9 @@ router.post('/:id', async (req, res) =>//TODO test comment
                         break;
                     }
                 }
-                for(var i = 0 ; i < req.session.user.purchasedProducts.length ; i++)
+                for(var i = 0 ; i < LoggedinUser.purchasedProducts.length ; i++)
                 {
-                    console.log(LoggedinUser.purchasedProducts[i].toString());
+                    console.log(onProduct._id.toString() + " " +  LoggedinUser.purchasedProducts[i].toString())
                     if(onProduct._id.toString() === LoggedinUser.purchasedProducts[i].toString())
                     {
                         purchased = true;
