@@ -293,6 +293,7 @@ router.put('/approvecomment/:commentid', async (req, res) =>{
     if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
     {
         await Comment.findByIdAndUpdate(req.params.commentid, {approved: true})
+        //TODO : Add some logic to change rating of the product
         res.status(200).send("Comment has been approved")
     }
     else
@@ -461,6 +462,14 @@ router.get('/allinvoices', async (req, res) =>{
         res.status(200).send("Update successful")
     }
     res.status(400).send("Please enter a valid status")
+    
+    
+});
+
+router.put('/allunapproved', async (req, res) =>{
+
+    var allUnapproved = Comment.find({approved: false});
+    return allUnapproved;
     
     
 });

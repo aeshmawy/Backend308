@@ -81,6 +81,7 @@ router.put('/sendemail' ,async (req,res) =>{
         var emailtaken = req.session.user.email;
         await User.findOneAndUpdate({email: emailtaken}, {isAuthen : true});
         console.log(emailtaken)
+        req.session.user.isAuthen = true;
         res.status(200).send("User Email has been authenticated")
     }
     else{
