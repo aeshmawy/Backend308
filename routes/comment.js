@@ -4,6 +4,7 @@ var router = express.Router();
 var User =  require("../Schema/User");
 var Product =  require("../Schema/Products");
 var Comment = require('../Schema/Comment');
+const User = require('../Schema/User');
 
 
 /* GET home page. */
@@ -64,7 +65,7 @@ router.post('/:id', async (req, res) =>//TODO test comment
                 
                 var onProduct = await Product.findById(req.params.id, {productImage: 0}).populate("productComments");
                 var purchased = false;
-                
+                var LoggedinUser = await User.findById(req.session.user._id);
                 var unique = true;
                 for(var i = 0 ; i < onProduct.productComments.length ; i++)
                 {
@@ -78,7 +79,7 @@ router.post('/:id', async (req, res) =>//TODO test comment
                 for(var i = 0 ; i < req.session.user.purchasedProducts.length ; i++)
                 {
                     
-                    if(onProduct._id.toString() === req.session.user.purchasedProducts[i].toString())
+                    if(onProduct._id.toString() === LoggedinUser.purchasedProducts[i].toString())
                     {
                         purchased = true;
                         break;
