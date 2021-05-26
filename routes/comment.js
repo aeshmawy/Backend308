@@ -4,7 +4,7 @@ var router = express.Router();
 var User =  require("../Schema/User");
 var Product =  require("../Schema/Products");
 var Comment = require('../Schema/Comment');
-const User = require('../Schema/User');
+
 
 
 /* GET home page. */
