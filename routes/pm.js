@@ -481,8 +481,14 @@ router.get('/allinvoices', async (req, res) =>{
 router.get('/allunapproved', async (req, res) =>{
 
     var allUnapproved = await  Comment.find({approved: false});
-    console.log(allUnapproved);
-    res.status(200).send(allUnapproved);
+    var easyArr = [];
+    for(var i = 0; i < allUnapproved.length; i++)
+    {
+        var element = allUnapproved[i].toObject();
+        element.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${allUnapproved[i].productID}`
+        easyArr.push(element)
+    }
+    res.status(200).send(easyArr);
     
     
 });
