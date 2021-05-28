@@ -88,7 +88,7 @@ router.post('/' , async (req,res) =>
   
   if(req.body.fullName && req.body.taxID && req.body.address && req.body.city && req.body.country)
   {
-    newuser.fullName = req.body.fullName;
+    newuser.fullname = req.body.fullName;
     newuser.taxID = req.body.taxID;
     newuser.address = req.body.address;
     newuser.city = req.body.city;
