@@ -33,12 +33,82 @@ router.use(async (req,res,next) =>{
         return res.status(403).send("User is not logged in")
     }
 })
+/**
+ * @swagger
+ * /sm/dates/total:
+ *   post:
+ *    description: Profit and loss with a given time frame.
+ *    tags: 
+ *      - SM
+ *    parameters:
+ *       - in : body
+ *         name : dates
+ *         schema: 
+ *          type: object
+ *          properties:
+ *            startdateday:
+ *              type: number
+ *            startdatemonth:
+ *              type: number
+ *            startdateyear:
+ *              type: number
+ *            enddateday:
+ *              type: number
+ *            enddatemonth:
+ *              type: number
+ *            enddateyear:
+ *              type: number
+ *       
+ *    responses:
+ *      '200':
+ *        description: Success
+ *      
+ */
+ router.post('/dates/total', async (req, res) =>{
+    if(req.body.startdateday && req.body.startdatemonth && req.body.startdateyear 
+        && req.body.enddateday && req.body.enddatemonth && req.body.enddateyear ){
+        var beginning = new Date(req.body.startdateyear, req.body.startdatemonth - 1, req.body.startdateday);
+        var end = new Date(req.body.enddateyear, req.body.enddatemonth - 1, req.body.enddateday);
+        end.setDate(end.getDate() + 1);
+       
+        var invoices = await Invoice.find({date: {$gte: beginning,$lt: end }})
+        var profit = 0
+        var loss = 0
+        var bought = 0;
+        var sold = 0;
+        var total = 0;
+        for(var i = 0; i < invoices.length; i++)
+        {
+            for(var j = 0; j < invoices[i].items.length; j++)
+            {
+                var wantedProduct = await Product.findById(invoices[i].items[j].Product).select('productOGPrice')
+                bought += wantedProduct.productOGPrice * invoices[i].items[j].Quantity
+                sold += invoices[i].items[j].PriceatPurchase * invoices[i].items[j].Quantity
+                total += sold - bought
+                profit += sold
+                loss -= bought
+                
+                bought = 0
+                sold = 0
+            }
+        }
+        total = (Math.round(total * 100) / 100).toFixed(2)
+        profit= (Math.round(profit * 100) / 100).toFixed(2)
+        loss= (Math.round(loss * 100) / 100).toFixed(2)
+        res.status(200).json({total: total, profit: profit, loss: loss})
+    }
+    else
+    {
+        res.status(400).send("Some variable is not defined in the body")
+    }
+
+})
 
 /**
  * @swagger
  * /sm/dates:
  *   post:
- *    description: Give a json file containing a username and password. 
+ *    description: Give a json file containing invoices within a given time frame. 
  *    tags: 
  *      - SM
  *    parameters:
