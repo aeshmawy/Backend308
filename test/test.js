@@ -19,7 +19,7 @@ it('should send back a JSON object with Logged in set to true', async function()
   await request(app)
     .post('/login')
     .set('Content-Type', 'application/json')
-    .send({ email: 'qwe@gmail.com', password: '123' } )
+    .send({ email: 'feelsbadneed@gmail.com', password: '123123123' } )
     .expect('Content-Type', /json/)
     .expect(200)
     .then((res) => {
@@ -94,7 +94,6 @@ describe('Product Tests: ', async function() {
         "productRating": 0,
         "productNumofRatings": 0
       } )
-      .expect('Content-Type', /json/)
       .expect(200)
       .then((res) => {
        expect(res.body.msg).to.equal("Product has been added to the database.") 
@@ -299,4 +298,281 @@ describe('Logged out Cart Tests: ', async function() {
       });
     }
   );
+})
+
+describe('Logged In Cart Tests: ', async function() {
+
+  it('should send back a JSON object with Logged in set to true', async function() {
+    await request(app)
+      .post('/login')
+      .set('Content-Type', 'application/json')
+      .send({ email: 'feelsbadneed@gmail.com', password: '123123123' } )
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then((res) => {
+       expect(res.body.loggedIn).to.equal(true) 
+       Cookies = res.headers['set-cookie'].pop().split(';')[0];
+      });
+    }
+  );
+
+  it('add first item to cart', async function() {
+    await request(app)
+      .post('/cart/add/606b0c26e8e7d76230b427c7/2')
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+        //Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged In : Unique Element added") 
+      });
+    }
+  );
+
+  it('add unique item to cart', async function() {
+    await request(app)
+      .post('/cart/add/606b1130275f386260dc79b4/1')
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+        //Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged In : Unique Element added") 
+      });
+    }
+  );
+  it('add same item to cart', async function() {
+    await request(app)
+      .post('/cart/add/606b0c26e8e7d76230b427c7/2')
+      .expect(200)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        //Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged In : Same Element added") 
+      });
+    }
+  );
+
+  it('get cart', async function() {
+    await request(app)
+      .get('/cart')
+      .expect('Content-Type', /json/)
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+        expect(res.body[0].quantity).to.equal(4)
+        expect(res.body[0]._id).to.equal("606b0c26e8e7d76230b427c7")
+        expect(res.body[1].quantity).to.equal(1)
+        expect(res.body[1]._id).to.equal("606b1130275f386260dc79b4")
+      });
+    }
+  );
+
+  it('delete item not in cart', async function() {
+    await request(app)
+      .delete('/cart/remove/606b1a80275f386260dc79c1/1')
+      .expect(400)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        expect(res.text).to.equal("Logged in: item is not in the cart") 
+      });
+    }
+  );
+
+  it('delete some item in cart', async function() {
+    await request(app)
+      .delete('/cart/remove/606b0c26e8e7d76230b427c7/2')
+      .expect(200)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("2 of the item have been removed from the cart(item is still in cart)") 
+      });
+    }
+  );
+
+  it('delete all of one item in cart', async function() {
+    await request(app)
+      .delete('/cart/remove/606b1130275f386260dc79b4/1')
+      .expect(200)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged in: Item has been completely removed from the cart") 
+      });
+    }
+  );
+
+  it('delete all of one item in cart', async function() {
+    await request(app)
+      .delete('/cart/remove/606b0c26e8e7d76230b427c7/2')
+      .expect(200)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged in: Item has been completely removed from the cart") 
+      });
+    }
+  );
+  
+  it('get cart after deletions', async function() {
+    await request(app)
+      .get('/cart')
+      .expect(200)
+      .set('Cookie', Cookies)
+      .then((res) => {
+        Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.body).to.eql([])
+      });
+    }
+  );
+  
+})
+
+
+
+describe('Complete Purchase: ', async function() {
+  it('add first item to cart', async function() {
+    await request(app)
+      .post('/cart/add/606b1130275f386260dc79b4/2')
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+        //Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("Logged In : Unique Element added") 
+      });
+    }
+  );
+
+  it('total Price', async function() {
+    await request(app)
+      .get('/purchase/totalprice')
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+        if(res.headers['set-cookie'])
+        Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.body.totalDCprice).to.equal("24.68");
+      });
+    }
+  );
+  
+  it('address', async function() {
+    this.timeout(3000);
+    await request(app)
+      .post('/purchase/step1')
+      .send(
+        {
+          "fullName": "Unit test",
+          "BaddressCountry": "string",
+          "BaddressCity": "string",
+          "BaddressStreet": "string",
+          "SaddressCountry": "Turkey",
+          "SaddressCity": "Istanbul",
+          "SaddressStreet": "Cool Street 1000"
+      } )
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) =>
+        {Cookies = res.headers['set-cookie'].pop().split(';')[0];
+        expect(res.text).to.equal("details saved");}
+      )
+      
+    }
+  );
+
+  
+  it('Step 2', async function() {
+    await request(app)
+      .post('/purchase/step2')
+      .set('Cookie', Cookies)
+      .send(
+        {
+          "CardNumber": "string",
+          "Date": "string",
+          "PIN": "string",
+          "CardName": "string"
+      } )
+      .expect(200)
+      
+    }
+  );
+
+  it('send invoice', async function() {
+    this.timeout(5000)
+    await request(app)
+      .get('/purchase/sendinvoice')
+      .set('Cookie', Cookies)
+      .expect(200)
+      
+    }
+  );
+})
+
+describe('Forbidden PM and SM: ', async function() {
+  it('Log in with normal account', async function() {
+    await request(app)
+      .post('/login')
+      .set('Content-Type', 'application/json')
+      .send({ email: 'feelsbadneed@gmail.com', password: '123123123' } )
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then((res) => {
+       expect(res.body.loggedIn).to.equal(true) 
+       Cookies = res.headers['set-cookie'].pop().split(';')[0];
+      });
+    }
+  );
+
+  it('Access PM functions', async function() {
+    await request(app)
+      .get('/pm/allinvoices')
+      .set('Cookie', Cookies)
+      .expect(403)
+      .then((res) => {
+       expect(res.text).to.equal("User does not have sufficient permission. Please log in as admin or PM") 
+       
+      });
+    }
+  );
+
+  it('Access SM functions', async function() {
+    await request(app)
+      .get('/sm/60ac00892adaba0015a938a1/pdf')
+      .set('Cookie', Cookies)
+      .expect(403)
+      .then((res) => {
+       expect(res.text).to.equal("User does not have sufficient permission. Please log in as admin or SM") 
+       
+      });
+    }
+  );
+})
+
+describe('Admin: ', async function() {
+  it('Log in with admin account', async function() {
+    await request(app)
+      .post('/login')
+      .set('Content-Type', 'application/json')
+      .send({ email: 'canvasadmin@gmail.com', password: '123123123' } )
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .then((res) => {
+       expect(res.body.loggedIn).to.equal(true) 
+       Cookies = res.headers['set-cookie'].pop().split(';')[0];
+      });
+    }
+  );
+
+  it('Access PM functions', async function() {
+    await request(app)
+      .put('/pm/productstock/606b1130275f386260dc79b4/100')
+      .set('Cookie', Cookies)
+      .expect(200)
+      .then((res) => {
+       expect(res.text).to.equal("Stock has been adjsuted") 
+       
+      });
+    }
+  );
+
+
 })

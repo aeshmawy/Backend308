@@ -181,7 +181,13 @@ router.get('/:id', async (req, res) =>
     }
     else
     {
-        console.log("here5")
+        for(var i = 0; i < onProduct.productComments.length; i++)
+        {
+            if(onProduct.productComments[i].approved === true)
+            {
+                Approved.push(onProduct.productComments[i]);
+            }
+        }
         res.status(200).send(Approved)
     }
     

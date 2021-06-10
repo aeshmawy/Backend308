@@ -25,7 +25,7 @@ router.use(async (req,res,next) =>{
         }
         else
         {
-            return res.status(403).send("User does not have sufficient permission. Please log in as admin or PM")
+            return res.status(403).send("User does not have sufficient permission. Please log in as admin or SM")
         }
     }
     else

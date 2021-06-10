@@ -126,7 +126,7 @@ const upload = multer(
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
      newProduct.productDCPrice = newProduct.productPrice - (newProduct.productPrice * (newProduct.productDiscount/100))
-     newProduct._id = "606b1a80275f386260dc79c1"
+     //newProduct._id = "606b1a80275f386260dc79c1"
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
