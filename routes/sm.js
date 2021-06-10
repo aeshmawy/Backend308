@@ -231,7 +231,7 @@ router.post('/discount/:productid',async  (req, res) =>
         discountProduct.productDiscount = req.body.discount;
         discountProduct.productDCPrice = discountprice;
         discountProduct.save();
-        res.status(201).send("Users have been emailed");
+        res.status(201).send("discount has been updated");
     }
     
 })

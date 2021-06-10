@@ -170,9 +170,10 @@ router.post('/step1', async (req,res) =>
             SaddressCity: req.body.SaddressCity,
             SaddressStreet: req.body.SaddressStreet,
             zipCode : req.body.zipCode,
-            totalprice: req.session.totalDCprice,
+            totalprice: (Math.round(req.session.totalDCprice * 100) / 100).toFixed(2),
         });
         req.session.details = details;
+        
         res.status(200).send("details saved");
     }
     else
