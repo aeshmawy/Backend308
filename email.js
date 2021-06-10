@@ -32,7 +32,7 @@ async function autoEmail(email , passcode) {
     accessToken: accessToken
     },
     tls: {
-    rejectUnauthorized: false
+    rejectUnauthorized: true
     }
     });
     

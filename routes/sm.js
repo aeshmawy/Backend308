@@ -191,8 +191,6 @@ router.post('/dates', async (req, res) =>{
  *       description: get pdf of an invoice
  *       tags:
  *       - SM
- *       produces:
- *       - application/pdf
  *       parameters:
  *       - in : path
  *         name: productid
@@ -237,6 +235,45 @@ router.post('/discount/:productid',async  (req, res) =>
     }
     
 })
+
+/**
+ * @swagger
+ * /sm/setprice/{productid}:
+ *    put:
+ *       description: get pdf of an invoice
+ *       tags:
+ *       - SM
+ *       parameters:
+ *       - in : path
+ *         name: productid
+ *         required: true
+ *         type: string
+ *       - in : body 
+ *         name : newprice
+ *         schema: 
+ *          type: object
+ *          properties:
+ *            newprice:
+ *              type: number
+ * 
+ *       responses:
+ *         200:
+ *           description: A successful product image get
+ *          
+ */
+ router.put('/setprice/:productid',async  (req, res) => 
+ {
+     var changeProduct = await Product.findById(req.params.productid);
+     var fullprice = changeProduct.productPrice;
+     var discountprice = req.body.newprice - ((changeProduct.productDiscount/100) * req.body.newprice);
+    
+    changeProduct.productPrice = req.body.newprice;
+    changeProduct.productDCPrice = discountprice;
+    changeProduct.save();
+    res.status(200).send("Price has been updated");
+    
+     
+ })
 /**
  * @swagger
  * /sm/{invoiceid}/pdf:
