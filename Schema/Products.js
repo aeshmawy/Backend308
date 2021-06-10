@@ -10,6 +10,7 @@ var productSchema = new mongoose.Schema({
     productName: {type:String , required: true},
     productDescription: {type:String , default: "Some description."},
     productStock: {type:Number , default : 10 , min: 0},
+    productOGPrice: {type:Number},
     productPrice: {type:Number, default: 15 ,min:0},
     productDCPrice: {type:Number, default: 15 ,min:0},
     productDiscount: {type: Number , default: 5 ,min:0, max:100},

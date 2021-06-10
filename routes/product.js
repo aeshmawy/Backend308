@@ -659,9 +659,9 @@ router.get('/bgcolor/:id' , async (req,res) =>{
     
     for(var i =0; i < products.length; i++ )
     {
-        products[i].productDCPrice = products[i].productPrice - (products[i].productPrice * (products[i].productDiscount/100))
-        products[i].productDCPrice = (Math.round(products[i].productDCPrice * 100) / 100).toFixed(2);
-        console.log( products[i].productDCPrice)
+        products[i].productOGPrice = products[i].productPrice - (products[i].productPrice * ((Math.floor(Math.random() * 20)+10)/100))
+        products[i].productOGPrice = (Math.round(products[i].productOGPrice * 100) / 100).toFixed(2);
+        console.log( products[i].productOGPrice)
         products[i].save()
     }
     res.status(200).send("done")

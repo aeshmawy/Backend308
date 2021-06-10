@@ -146,6 +146,7 @@ router.post('/addproduct', async (req, res) =>{
      newProduct.productImageLink = `http://localhost:5000/product/image/${newProduct._id}`  
      newProduct.onlineImageLink = `https://cs308canvas.herokuapp.com/product/image/${newProduct._id}`
      newProduct.productDCPrice = newProduct.productPrice - (newProduct.productPrice * (newProduct.productDiscount/100))
+     newProduct.productOGPrice = newProduct.productPrice - (newProduct.productPrice * (20/100))
      //console.log(newProduct);
      newProduct.save((err, savedProduct) =>
      {
@@ -292,8 +293,15 @@ router.put('/productstock/:id/:quantity', async (req, res) =>{
 router.put('/approvecomment/:commentid', async (req, res) =>{
     if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
     {
-        await Comment.findByIdAndUpdate(req.params.commentid, {approved: true})
+        var result = await Comment.findByIdAndUpdate(req.params.commentid, {approved: true})
         //TODO : Add some logic to change rating of the product
+        var updateRating = await Product.findById(result.productID)
+        var temp = updateRating.productRating * updateRating.productNumofRatings
+        updateRating.productNumofRatings = updateRating.productNumofRatings + 1
+        var temp = (temp + result.rating)/updateRating.productNumofRatings
+        updateRating.productRating = temp;
+        updateRating.productRating = (Math.round(updateRating.productRating * 100) / 100).toFixed(2);
+        updateRating.save();
         res.status(200).send("Comment has been approved")
     }
     else
@@ -491,5 +499,98 @@ router.get('/allunapproved', async (req, res) =>{
     res.status(200).send(easyArr);
     
     
+});
+
+/**
+ * @swagger
+ * /pm/allunapprovedrefunds:
+ *  get:
+ *    description: get all unapproved refunds
+ *    tags:
+ *      - PM  
+ *    responses:
+ *      '200':
+ *        description: get refunds
+ *      
+ */
+router.get('/allunapprovedrefunds', async (req, res) =>{
+
+    var refunds = await  Refunds.find({approved: false}).populate("productID");;
+    return res.status(200).send(refunds);
+    
+    
+});
+
+/**
+ * @swagger
+ * /pm/approvecomment/{commentid}:
+ *   put:
+ *     description: approva a comment
+ *     tags:
+ *      - PM
+ *     parameters:
+ *      - in : path
+ *        name : commentid
+ *        type: string
+ *        required : true 
+ *     responses:
+ *        '200':
+ *          description: Successful comment approval
+ *       
+ */
+ router.put('/approverefund/:refundid', async (req, res) =>{
+    if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+        var result = await Refunds.findByIdAndUpdate(req.params.refundid, {approved: true});
+        //send imaginary money back
+        res.status(200).send("Refund has been approved")
+    }
+    else
+    {
+        return res.status(400).send("Refund id is not valid");
+    }
+});
+
+/**
+ * @swagger
+ * /pm/denyrefund/{refundid}:
+ *   put:
+ *     description: deny a refund
+ *     tags:
+ *      - PM
+ *     parameters:
+ *      - in : path
+ *        name : refundid
+ *        type: string
+ *        required : true 
+ *     responses:
+ *        '200':
+ *          description: Successful refund denial
+ *       
+ */
+ router.put('/denyrefund/:refundid', async (req, res) =>{
+
+    if (req.params.refundid.match(/^[0-9a-fA-F]{24}$/)) 
+    {
+        var result = await Refunds.findById(req.params.refundid);
+        var invoice = await Invoice.findById(result.invoiceID);
+        for(var i in invoice.items)
+        {
+            if(invoice.items[i].Product.toString() === result.productID.toString())
+            {
+                invoice.items[i].Quantity = invoice.items[i].Quantity + result.quantity;
+                invoice.save();
+                break;
+            }
+           
+        }
+        await Refunds.findByIdAndDelete(req.params.refundid);
+        //add back to invoice
+        res.status(200).send("Refund has been denied")
+    }
+    else
+    {
+        return res.status(400).send("Refund id is not valid");
+    }
 });
 module.exports = router;
