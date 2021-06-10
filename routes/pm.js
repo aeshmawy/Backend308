@@ -523,14 +523,14 @@ router.get('/allunapprovedrefunds', async (req, res) =>{
 
 /**
  * @swagger
- * /pm/approvecomment/{commentid}:
+ * /pm/approverefund/{refundid}:
  *   put:
  *     description: approva a comment
  *     tags:
  *      - PM
  *     parameters:
  *      - in : path
- *        name : commentid
+ *        name : refundid
  *        type: string
  *        required : true 
  *     responses:
@@ -539,7 +539,7 @@ router.get('/allunapprovedrefunds', async (req, res) =>{
  *       
  */
  router.put('/approverefund/:refundid', async (req, res) =>{
-    if (req.params.commentid.match(/^[0-9a-fA-F]{24}$/)) 
+    if (req.params.refundid.match(/^[0-9a-fA-F]{24}$/)) 
     {
         var result = await Refunds.findByIdAndUpdate(req.params.refundid, {approved: true});
         //send imaginary money back
