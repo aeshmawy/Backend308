@@ -75,6 +75,10 @@ router.use(async (req,res,next) =>{
         tempend.setDate( tempend.getDate() + 7)
         
         var easyArr = []
+        var weeklyTotal = []
+        var weeklyProfit = []
+        var weeklyLoss = []
+        var weeklyDate = []
         
         while(tempend < end)
         {
@@ -106,6 +110,10 @@ router.use(async (req,res,next) =>{
             
             var element = {total:total, profit: profit, loss: loss, startDate: x}
             easyArr.push(element)
+            weeklyTotal.push(total)
+            weeklyProfit.push(profit)
+            weeklyLoss.push(loss)
+            weeklyDate.push(x)
             tempend.setDate( tempend.getDate() + 7)
             tempbeginning.setDate( tempbeginning.getDate() + 7)
         }
@@ -137,6 +145,10 @@ router.use(async (req,res,next) =>{
             loss= (Math.round(loss * 100) / 100).toFixed(2)
             var element = {total:total, profit: profit, loss: loss, startDate: tempbeginning}
             easyArr.push(element)
+            weeklyTotal.push(total)
+            weeklyProfit.push(profit)
+            weeklyLoss.push(loss)
+            weeklyDate.push(tempbeginning)
         }
         
         
@@ -166,7 +178,8 @@ router.use(async (req,res,next) =>{
         total = (Math.round(total * 100) / 100).toFixed(2)
         profit= (Math.round(profit * 100) / 100).toFixed(2)
         loss= (Math.round(loss * 100) / 100).toFixed(2)
-        res.status(200).json({total: total, profit: profit, loss: loss, weekly: easyArr})
+        res.status(200).json({total: total, profit: profit, loss: loss, weekly: easyArr, weeklyTotal: weeklyTotal,
+            weeklyProfit: weeklyProfit,weeklyLoss: weeklyLoss,weeklyDate: weeklyDate})
     }
     else
     {
