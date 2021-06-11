@@ -70,7 +70,78 @@ router.use(async (req,res,next) =>{
         var beginning = new Date(req.body.startdateyear, req.body.startdatemonth - 1, req.body.startdateday);
         var end = new Date(req.body.enddateyear, req.body.enddatemonth - 1, req.body.enddateday);
         end.setDate(end.getDate() + 1);
-       
+        var tempbeginning = new Date(req.body.startdateyear, req.body.startdatemonth - 1, req.body.startdateday);
+        var tempend = new Date(req.body.startdateyear, req.body.startdatemonth - 1, req.body.startdateday)
+        tempend.setDate( tempend.getDate() + 7)
+        
+        var easyArr = []
+        
+        while(tempend < end)
+        {
+            var invoices = await Invoice.find({date: {$gte: tempbeginning,$lt: tempend }})
+            var profit = 0
+            var loss = 0
+            var bought = 0;
+            var sold = 0;
+            var total = 0;  
+            for(var i = 0; i < invoices.length; i++)
+            {
+                for(var j = 0; j < invoices[i].items.length; j++)
+                {
+                    var wantedProduct = await Product.findById(invoices[i].items[j].Product).select('productOGPrice')
+                    bought += wantedProduct.productOGPrice * invoices[i].items[j].Quantity
+                    sold += invoices[i].items[j].PriceatPurchase * invoices[i].items[j].Quantity
+                    total += sold - bought
+                    profit += sold
+                    loss -= bought
+                    
+                    bought = 0
+                    sold = 0
+                }
+            }
+            total = (Math.round(total * 100) / 100).toFixed(2)
+            profit= (Math.round(profit * 100) / 100).toFixed(2)
+            loss= (Math.round(loss * 100) / 100).toFixed(2)
+            var x = new Date(tempbeginning);
+            
+            var element = {total:total, profit: profit, loss: loss, startDate: x}
+            easyArr.push(element)
+            tempend.setDate( tempend.getDate() + 7)
+            tempbeginning.setDate( tempbeginning.getDate() + 7)
+        }
+        if(tempend >= end)
+        {
+            var invoices = await Invoice.find({date: {$gte: tempbeginning,$lt: end }})
+            var profit = 0
+            var loss = 0
+            var bought = 0;
+            var sold = 0;
+            var total = 0;  
+            for(var i = 0; i < invoices.length; i++)
+            {
+                for(var j = 0; j < invoices[i].items.length; j++)
+                {
+                    var wantedProduct = await Product.findById(invoices[i].items[j].Product).select('productOGPrice')
+                    bought += wantedProduct.productOGPrice * invoices[i].items[j].Quantity
+                    sold += invoices[i].items[j].PriceatPurchase * invoices[i].items[j].Quantity
+                    total += sold - bought
+                    profit += sold
+                    loss -= bought
+                    
+                    bought = 0
+                    sold = 0
+                }
+            }
+            total = (Math.round(total * 100) / 100).toFixed(2)
+            profit= (Math.round(profit * 100) / 100).toFixed(2)
+            loss= (Math.round(loss * 100) / 100).toFixed(2)
+            var element = {total:total, profit: profit, loss: loss, startDate: tempbeginning}
+            easyArr.push(element)
+        }
+        
+        
+        console.log(easyArr)
+
         var invoices = await Invoice.find({date: {$gte: beginning,$lt: end }})
         var profit = 0
         var loss = 0
@@ -95,7 +166,7 @@ router.use(async (req,res,next) =>{
         total = (Math.round(total * 100) / 100).toFixed(2)
         profit= (Math.round(profit * 100) / 100).toFixed(2)
         loss= (Math.round(loss * 100) / 100).toFixed(2)
-        res.status(200).json({total: total, profit: profit, loss: loss})
+        res.status(200).json({total: total, profit: profit, loss: loss, weekly: easyArr})
     }
     else
     {
